@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Memoria Principal</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+	<style type="text/css">
+	<!--
+		.reg {color: black; border: none; height: 18px; font-weight: bold; font-size: 10pt;}
+		.regC {color: red; border: none; height: 18px; font-weight: bold; font-size: 10pt;}
+		.celdaN {color: black; border-color: white; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.celdaA {color: blue; border-color: green; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.celdaC {color: red; border-color: green; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.cabecera {color: white; font: 18pt; font-family: sans-serif; font-weight: bold}
+		.apartado {color: white; font: 14pt; font-family: sans-serif; font-weight: bold}
+	-->
+	</style>
+
+	<script language="JavaScript">
+		var celdaActiva = 0;
+
+		function activarCelda()
+		{
+			eval('m'+celdaActiva+'.className = "celdaN";');
+
+			celdaActiva = rdm.value;
+			eval('m'+celdaActiva+'.className = "celdaA";');
+		}
+		
+		function cambiaRIM()
+		{
+			rim.className = "reg";
+		}
+		
+		function pulso()
+		{
+			var row, dato;
+			
+			row = rdm.value;
+			
+			if (signal.value == "L") {
+				eval('rim.value = m'+row+'.value;');
+				rim.className = "regC";
+			}
+			else {
+				dato = Number(rim.value);
+				dato = (dato.toString() == "NaN")?128:dato;
+				
+				if ((dato < -128) || (dato > 127)) {
+					alert("El rango de valores permitido para RIM es desde -128 hasta 127");
+					return;
+				}
+				
+				rim.value = dato;
+				
+				eval('m'+row+'.value = rim.value;');
+				eval('m'+celdaActiva+'.className = "celdaC";');
+			}
+		}
+	</script>
+</head>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+	<table border="0" bgcolor="green" width="100%">
+		<tr>
+			<td class="cabecera" align="center">Esquema de Acceso a Memoria</td>
+		</tr>
+	</table>
+	<br><br>
+
+
+	<table cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr>
+		<td colspan="9"><img width="651" height="30" src="images/memoria_1.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_2.gif" border="0"></td>
+		<td background="images/memoria_3.gif" width="104" height="21" valign="top">
+			<input name="m0" class="celdaA" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_4.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_5.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_6.gif" border="0"></td>
+		<td background="images/memoria_7.gif" width="104" height="21" valign="top">
+			<input name="m1" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_8.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_9.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_10.gif" border="0"></td>
+		<td background="images/memoria_11.gif" width="104" height="21" valign="top">
+			<input name="m2" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_12.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_13.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_14.gif" border="0"></td>
+		<td background="images/memoria_15.gif" width="104" height="21" valign="top">
+			<input name="m3" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_16.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_17.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_18.gif" border="0"></td>
+		<td background="images/memoria_19.gif" width="104" height="21" valign="top">
+			<input name="m4" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_20.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_21.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_22.gif" border="0"></td>
+		<td background="images/memoria_23.gif" width="104" height="21" valign="top">
+			<input name="m5" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_24.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_25.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_26.gif" border="0"></td>
+		<td background="images/memoria_27.gif" width="104" height="21" valign="top">
+			<input name="m6" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_28.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_29.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_30.gif" border="0"></td>
+		<td background="images/memoria_31.gif" width="104" height="21" valign="top">
+			<input name="m7" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_32.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_33.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_34.gif" border="0"></td>
+		<td background="images/memoria_35.gif" width="104" height="21" valign="top">
+			<input name="m8" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_36.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_37.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="21" src="images/memoria_38.gif" border="0"></td>
+		<td background="images/memoria_39.gif" width="104" height="21" valign="top">
+			<input name="m9" class="celdaN" type="text" readonly>
+		</td>
+		<td><img width="49" height="21" src="images/memoria_40.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_41.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="1" src="images/memoria_42.gif" border="0"></td>
+		<td rowspan="2" background="images/memoria_43.gif" width="104" height="21" valign="top">
+			<input name="mA" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="2"><img width="49" height="21" src="images/memoria_44.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="3" colspan="3"><img width="216" height="26" src="images/memoria_45.gif" border="0"></td>
+		<td rowspan="3" colspan="3" background="images/memoria_46.gif" width="79" height="26" valign="top">
+			<select name="rdm" onchange="activarCelda()">
+	        	<option value="0">0</option>
+	        	<option value="1">1</option>
+	        	<option value="2">2</option>
+	        	<option value="3">3</option>
+	        	<option value="4">4</option>
+	        	<option value="5">5</option>
+	        	<option value="6">6</option>
+	        	<option value="7">7</option>
+	        	<option value="8">8</option>
+	        	<option value="9">9</option>
+	        	<option value="A">A</option>
+	        	<option value="B">B</option>
+	        	<option value="C">C</option>
+	        	<option value="D">D</option>
+	        	<option value="E">E</option>
+	        	<option value="F">F</option>
+	        </select>
+		</td>
+		<td><img width="203" height="20" src="images/memoria_47.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="3"><img width="356" height="5" src="images/memoria_48.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td><img width="203" height="1" src="images/memoria_49.gif" border="0"></td>
+		<td rowspan="2" background="images/memoria_50.gif" width="104" height="21" valign="top">
+			<input name="mB" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="2"><img width="49" height="21" src="images/memoria_51.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="20" src="images/memoria_52.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="6" src="images/memoria_53.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="9" src="images/memoria_54.gif" border="0"></td>
+		<td rowspan="2" background="images/memoria_55.gif" width="104" height="21" valign="top">
+			<input name="mC" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="2"><img width="49" height="21" src="images/memoria_56.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="3"><img width="201" height="25" src="images/memoria_57.gif" border="0"></td>
+		<td rowspan="3" colspan="4" background="images/memoria_58.gif" width="93" height="25" valign="top">
+			<select name="signal">
+	        	<option value="L" selected>Leer</option>
+	         	<option value="E">Escribir</option>
+	        </select>
+		</td>
+		<td colspan="2"><img width="204" height="12" src="images/memoria_59.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="4"><img width="357" height="5" src="images/memoria_60.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="204" height="8" src="images/memoria_61.gif" border="0"></td>
+		<td rowspan="3" background="images/memoria_62.gif" width="104" height="21" valign="top">
+			<input name="mD" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="3"><img width="49" height="21" src="images/memoria_63.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="9" src="images/memoria_64.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="3"><img width="201" height="25" src="images/memoria_65.gif" border="0"></td>
+		<td rowspan="3" colspan="4" background="images/memoria_66.gif" width="93" height="25" valign="top">
+			<input type="button" value="Inicio" onclick="pulso()">
+		</td>
+		<td colspan="2"><img width="204" height="4" src="images/memoria_67.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="4"><img width="357" height="6" src="images/memoria_68.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="204" height="15" src="images/memoria_69.gif" border="0"></td>
+		<td rowspan="2" background="images/memoria_70.gif" width="104" height="21" valign="top">
+			<input name="mE" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="2"><img width="49" height="21" src="images/memoria_71.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="6" src="images/memoria_72.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="5" src="images/memoria_73.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="7"><img width="498" height="7" src="images/memoria_74.gif" border="0"></td>
+		<td rowspan="2" background="images/memoria_75.gif" width="104" height="21" valign="top">
+			<input name="mF" class="celdaN" type="text" readonly>
+		</td>
+		<td rowspan="2"><img width="49" height="21" src="images/memoria_76.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="2" colspan="2"><img width="209" height="21" src="images/memoria_77.gif" border="0"></td>
+		<td rowspan="2" colspan="2" background="images/memoria_78.gif" width="84" height="21" valign="top">
+			<input name="rim" class="reg" type="text" size="8" onchange="cambiaRIM()">
+		</td>
+		<td colspan="3"><img width="205" height="14" src="images/memoria_79.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="5"><img width="358" height="7" src="images/memoria_80.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="9"><img width="651" height="31" src="images/memoria_81.gif" border="0"></td>
+	</tr>
+	<tr>
+	<td><img width="201" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="8" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="7" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="77" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="203" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="104" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="49" height="1" src="images/space.gif" border="0"></td>
+	</tr>
+	</table>
+
+	<table border="0" cellspacing="20" width="100%"><tr><td bgcolor="#EFF3FF">
+		<table border="0" bgcolor="navy" width="100%">
+			<tr>
+				<td class="apartado" align="center">Descripción de la Memoria</td>
+			</tr>
+		</table>
+	
+		<table border="0" cellspacing="20" width="100%"><tr><td>
+			En este ejemplo se muestra el esquema de acceso a una memoria desde de la CPU.
+			La memoria tiene un tamaño de 16 palabras de 8 bits cada una, por lo tanto, su
+			capacidad total es de 16 Bytes.
+			<br><br>
+			<b>RDM</b>: <i>Registro de Dirección de Memoria</i>. Indica la celda de memoria a la que se
+			desea acceder.<br>
+			<b>RIM</b>: <i>Registro de Intercambio con Memoria</i>. Es un registro que, en caso de
+			lectura, recibe el dato de la celda de memoria seleccionada, y en caso de escritura,
+			contiene el dato que se desea almacenar en ella.<br>
+			<b>C1</b>: Señal de control con la que se le indica a la memoria el tipo de operación
+			que se va a realizar.<br>
+			<b>C2</b>: Señal de control con la que se le indica a la memoria que ejecute la operación.<br>
+		</td></tr></table>
+	</td></tr></table>
+
+	
+</body>
+</html>
