@@ -57,9 +57,7 @@ button:hover {
 }
 
 #menuImg {
-
     position: relative;
-    z-index: -1;
 }
 
 #menu {

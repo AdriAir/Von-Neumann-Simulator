@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/returnMenubtn.css">
+    <link rel="stylesheet" href="../styles/imgMenus.css">
+    <title>Memoria Principal</title>
+</head>
+
+<body>
+    <button id="returnMenu">
+        Menú
+    </button>
+    <div id="simulador">
+        <center>
+            <img src="../img/mp.png" id="menuImg" oncontextmenu="return false;" ondragstart="return false;">
+        </center>
+    </div>
+    <script>
+
+        let menuBtn = document.getElementById("returnMenu");
+
+        let menuPage = "../index.html"
+
+        menuBtn.onclick = function () {
+            window.location.replace(menuPage);
+        };
+
+    </script>
+</body>
+
+</html>
