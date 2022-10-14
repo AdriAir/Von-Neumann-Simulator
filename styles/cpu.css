@@ -1,0 +1,10 @@
+#simulador {
+    position: absolute;
+    left: calc(50vw - (700px / 2));
+    height: 500px;
+    width: 700px;
+}
+#menuImg {
+    height: calc(657px - 20%);
+    width: calc(867px - 20%);
+}

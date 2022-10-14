@@ -10,3 +10,6 @@ v0.01:
 v0.02:
     - Se han añadido el resto de esqueletos de las webs y sus respectivos botones para el redireccionamiento.
     - Se ha eliminado la posibilidad de seleccionar, arrastrar y abrir el menú contextual en todas las imágenes de fondo del simulador
+
+v0.021:
+    - Commit realizado para traspasar el repositorio a otro dispositivo

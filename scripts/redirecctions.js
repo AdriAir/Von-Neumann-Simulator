@@ -3,10 +3,10 @@ let aluBtn = document.getElementById("alu");
 let ucBtn = document.getElementById("uc");
 let mpBtn = document.getElementById("mp");
 
-let cpuPage = "../pages/cpu.html"
-let aluPage = "../pages/alu.html"
-let mpPage = "../pages/mp.html"
-let ucPage = "../pages/uc.html"
+let cpuPage = "./pages/cpu.html"
+let aluPage = "./pages/alu.html"
+let mpPage = "./pages/mp.html"
+let ucPage = "./pages/uc.html"
 
 cpuBtn.onclick = function(){
     window.location.replace(cpuPage);
