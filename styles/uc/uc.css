@@ -1,0 +1,32 @@
+#simulador {
+    position: absolute;
+    left: calc(50vw - (700px / 2));
+    height: 500px;
+    width: 700px;
+}
+#menuImg {
+    height: calc(657px - 20%);
+    width: calc(867px - 20%);
+}
+
+#returnMenu {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    width: 50px;
+    height: 25px;
+    background-color: aquamarine;
+    border: solid black 1px;
+    z-index: 1;
+}
+
+#returnMenu:hover {
+    background-color: sienna;
+    color: white;
+}
+
+img {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}

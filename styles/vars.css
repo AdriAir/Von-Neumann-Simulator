@@ -1,0 +1,7 @@
+/* Variables */
+* {
+    --btn-background-color: #c693eb;
+    --btn-hover-background-color: #c29e64;
+    --btn-text-color: black;
+    --btn-hover-text-color: black;
+}

@@ -13,3 +13,9 @@ v0.02:
 
 v0.021:
     - Commit realizado para traspasar el repositorio a otro dispositivo
+
+v0.1:
+    - Ya está operativa la sección de "Memoria Principal" del simulador.
+    - Se ha realizado una limpieza de la estructura del código de la aplicación
+    - Se han realizado mejoras y cambios en el diseño de la aplicación
+    - Se han corregido errores de direccionamiento

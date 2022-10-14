@@ -5,32 +5,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/returnMenubtn.css">
-    <link rel="stylesheet" href="../styles/uc.css">
-    <link rel="stylesheet" href="../styles/imgMenus.css">
+    <link rel="stylesheet" href="../styles/uc/uc.css">
+    <link rel="stylesheet" href="../styles/vars.css">
     <title>Unidad de Control</title>
 </head>
 
 <body>
-    <button id="returnMenu">
-        Menú
-    </button>
-    <div id="simulador">
+    <a href="../index.html">
+        <button id="returnToMenu" >
+            Menú
+        </button>
+    </a>
+    <div id="simulator">
         <center>
-            <img src="../img/uc.png" id="menuImg" oncontextmenu="return false;" ondragstart="return false;">
+            <img src="../img/uc.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
         </center>
     </div>
-    <script>
-
-        let menuBtn = document.getElementById("returnMenu");
-
-        let menuPage = "../index.html"
-
-        menuBtn.onclick = function () {
-            window.location.replace(menuPage);
-        };
-
-    </script>
 </body>
 
 </html>

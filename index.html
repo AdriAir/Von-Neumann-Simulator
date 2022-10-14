@@ -5,26 +5,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styles/menu.css">
-    <link rel="stylesheet" href="../styles/imgMenus.css">
+    <link rel="stylesheet" href="./styles/index/index.css">
+    <link rel="stylesheet" href="./styles/vars.css">
     <title>Menú Principal</title>
 </head>
 
 <body>
-    <div id="menu">
+    <div id="simulator">
         <center>
-            <img src="./img/menu.png" id="menuImg" oncontextmenu="return false;" ondragstart="return false;">
-            <div id="mp">
-                <button class="button">
+            <img src="./img/menu.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
+            <a href="./pages/mp.html">
+                <button id="mpBtn" class="btn">
                     <strong>
                         Memoria Principal
                     </strong>
                     <br>
                     (datos e instrucciones)
                 </button>
-            </div>
-            <div id="alu">
-                <button class="button">
+            </a>
+            <a href="./pages/alu.html">
+                <button id="aluBtn" class="btn">
                     Unidad
                     <br>
                     Aritmético-Lógica
@@ -33,26 +33,25 @@
                         (ALU)
                     </strong>
                 </button>
-            </div>
-            <div id="uc">
-                <button class="button">
+            </a>
+            <a href="./pages/uc.html">
+                <button id="ucBtn" class="btn">
                     Unidad de Control
                     <br>
                     <strong>
                         (UC)
                     </strong>
                 </button>
-            </div>
-            <div id="cpu">
-                <button class="button">
+            </a>
+            <a href="./pages/cpu.html">
+                <button id="cpuBtn" class="btn">
                     <strong>
                         CPU
                     </strong>
                 </button>
-            </div>
+            </a>
         </center>
     </div>
-    <script src="./scripts/redirecctions.js"></script>
 </body>
 
 </html>

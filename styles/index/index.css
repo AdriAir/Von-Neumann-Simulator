@@ -1,0 +1,60 @@
+.btn {
+    position: absolute;
+    border: none;
+    background: none;
+    color: var(--btn-text-color);
+    background-color: var(--btn-background-color);
+    border: solid black 1px;
+}
+
+.btn:hover {
+    background-color: var(--btn-hover-background-color);
+    color: var(--btn-hover-text-color);
+}
+
+#aluBtn {
+    right: 360px;
+    bottom: 189px;
+    width: 137px;
+    height: 58px;
+}
+
+#ucBtn {
+    right: 186px;
+    bottom: 191px;
+    width: 137px;
+    height: 54px;
+}
+
+#mpBtn {
+    left: 254px;
+    bottom: 312px;
+    width: 209px;
+    height: 43px;
+}
+
+#cpuBtn {
+    right: 175px;
+    bottom: 161px;
+    width: 62px;
+    height: 19px;
+    background-color: green;
+    border: none;
+}
+
+#cpuBtn:hover{
+    color: white;
+}
+
+#simulator {
+    position: absolute;
+    left: calc(50vw - (700px / 2));
+    height: 500px;
+    width: 700px;
+}
+
+#simulatorImg {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}

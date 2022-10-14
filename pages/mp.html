@@ -5,35 +5,89 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/returnMenubtn.css">
-    <link rel="stylesheet" href="../styles/imgMenus.css">
-    <link rel="stylesheet" href="../styles/mp.css">
+    <link rel="stylesheet" href="../styles/mp/mp.css">
+    <link rel="stylesheet" href="../styles/vars.css">
     <title>Memoria Principal</title>
 </head>
 
 <body>
-    <button id="returnMenu">
-        Menú
-    </button>
-    <div id="simulador">
+    <a href="../index.html">
+        <button id="returnToMenu">
+            Menú
+        </button>
+    </a>
+    <div id="simulator">
         <center>
-            <img src="../img/mp.png" id="menuImg" oncontextmenu="return false;" ondragstart="return false;">
-            <option value="number">
-                <!-- Aqui van opciones -->
-            </option>
+            <img src="../img/mp.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
+            <select name="rdm" id="mp-rdm">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+            </select>
+            <select name="c1" id="mp-c1">
+                <option value="read">Leer</option>
+                <option value="write">Escribir</option>
+            </select>
+            <button id="mp-c2">
+                Iniciar
+            </button>
+            <input type="number" id="mp-rim" placeholder="-128/127" min="-128" max="127">
+            <div id="mp-rdm-0"></div>
+            <div id="mp-rdm-1"></div>
+            <div id="mp-rdm-2"></div>
+            <div id="mp-rdm-3"></div>
+            <div id="mp-rdm-4"></div>
+            <div id="mp-rdm-5"></div>
+            <div id="mp-rdm-6"></div>
+            <div id="mp-rdm-7"></div>
+            <div id="mp-rdm-8"></div>
+            <div id="mp-rdm-9"></div>
+            <div id="mp-rdm-A"></div>
+            <div id="mp-rdm-B"></div>
+            <div id="mp-rdm-C"></div>
+            <div id="mp-rdm-D"></div>
+            <div id="mp-rdm-E"></div>
+            <div id="mp-rdm-F"></div>
         </center>
     </div>
-    <script>
+    <div id="description">
+        <h3>
+            Descripción de la Memoria
+        </h3>
+        <section>
+            En este ejemplo se muestra el esquema de acceso a una memoria desde de la CPU.La memoria tiene un tamaño
+            de
+            16 palabras de 8 bits cada una, por lo tanto, sucapacidad total es de 16 Bytes.
+            <br>
+            <br>
+            RDM: Registro de Dirección de Memoria. Indica la celda de memoria a la que sedesea acceder.
+            <br>
+            RIM: Registro de Intercambio con Memoria. Es un registro que, en caso delectura, recibe el dato de la
+            celda
+            de memoria seleccionada, y en caso de escritura,contiene el dato que se desea almacenar en ella.
+            <br>
+            C1: Señal de control con la que se le indica a la memoria el tipo de operaciónque se va a realizar.
+            <br>
+            C2: Señal de control con la que se le indica a la memoria que ejecute la operación.
+            <br>
+        </section>
+    </div>
 
-        let menuBtn = document.getElementById("returnMenu");
+<script src="../scripts/mp.js"></script>
 
-        let menuPage = "../index.html"
-
-        menuBtn.onclick = function () {
-            window.location.replace(menuPage);
-        };
-
-    </script>
 </body>
 
 </html>

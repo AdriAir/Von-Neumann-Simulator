@@ -1,0 +1,207 @@
+body{
+    margin: 0px;
+}
+
+#simulator {
+    position: absolute;
+    left: calc(50vw - (700px / 2));
+    height: 500px;
+    width: 700px;
+}
+
+#simulatorImg {
+    height: calc(657px - 20%);
+    width: calc(867px - 20%);
+
+}
+
+#returnToMenu {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    width: 50px;
+    height: 25px;
+    background-color: var(--btn-background-color);
+    border: solid black 1px;
+    z-index: 1;
+}
+
+#returnToMenu:hover {
+    background-color: var(--btn-hover-background-color);
+    /* color: white; */
+}
+
+#mp-rdm{
+    position: absolute;
+    left: 245px;
+    bottom: 134px;
+    width: 50px;
+    height: 29px;
+}
+
+#mp-c1{
+    position: absolute;
+    left: 230px;
+    bottom: 71px;
+    width: 80px;
+    height: 27px;
+}
+
+#mp-c2{
+    position: absolute;
+    left: 230px;
+    bottom: 36px;
+    width: 60px;
+    height: 27px;
+}
+#mp-rim{
+    position: absolute;
+    left: 240px;
+    bottom: -6px;
+    width: 80px;
+    height: 17px;
+}
+#mp-rdm-0{
+    position: absolute;
+    left: 542px;
+    top: 59px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-1{
+    position: absolute;
+    left: 542px;
+    top: 86px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-2{
+    position: absolute;
+    left: 542px;
+    top: 115px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-3{
+    position: absolute;
+    left: 542px;
+    top: 143px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-4{
+    position: absolute;
+    left: 542px;
+    top: 171px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-5{
+    position: absolute;
+    left: 542px;
+    top: 198px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-6{
+    position: absolute;
+    left: 542px;
+    top: 226px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-7{
+    position: absolute;
+    left: 542px;
+    top: 254px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-8{
+    position: absolute;
+    left: 542px;
+    top: 282px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-9{
+    position: absolute;
+    left: 542px;
+    top: 309px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-A{
+    position: absolute;
+    left: 542px;
+    top: 337px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-B{
+    position: absolute;
+    left: 542px;
+    top: 365px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-C{
+    position: absolute;
+    left: 542px;
+    top: 393px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-D{
+    position: absolute;
+    left: 542px;
+    top: 420px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-E{
+    position: absolute;
+    left: 542px;
+    top: 448px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+#mp-rdm-F{
+    position: absolute;
+    left: 542px;
+    top: 475px;
+    background-color: white;
+    height: 20px;
+    width: 110px;
+}
+
+#description{
+    background-color: var(--btn-background-color);
+    padding-left: 10vw;
+    padding-right: 10vw;
+    padding-bottom: 30px;
+    position: absolute;
+    width: 80vw;
+    text-align: justify;
+    bottom: 0px;
+    height: fit-content;
+}
+
+#description h3{
+    text-align: center;
+}
