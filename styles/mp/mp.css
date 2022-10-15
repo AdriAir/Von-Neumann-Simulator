@@ -12,7 +12,9 @@ body{
 #simulatorImg {
     height: calc(657px - 20%);
     width: calc(867px - 20%);
-
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 #returnToMenu {

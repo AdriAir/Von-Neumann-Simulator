@@ -19,6 +19,19 @@
     <div id="simulator">
         <center>
             <img src="../img/alu.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
+            <input type="number" id="alu-o1" placeholder="-128/127" min="-128" max="127">
+            <input type="number" id="alu-o2" placeholder="-128/127" min="-128" max="127">
+            <select name="c1" id="alu-c1">
+                <option value="add">Sumar</option>
+                <option value="subtract">Restar</option>
+                <option value="multiply">Multiplicar</option>
+                <option value="divide">Dividir</option>
+                <option value="compare">Comparar</option>
+                <option value="transfer">Transferir</option>
+            </select>
+            <button id="alu-c2">
+                Iniciar
+            </button>
         </center>
     </div>
 </body>
