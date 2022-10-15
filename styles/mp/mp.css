@@ -195,10 +195,10 @@ body{
     padding-left: 10vw;
     padding-right: 10vw;
     padding-bottom: 30px;
-    position: absolute;
+    position: relative;
     width: 80vw;
     text-align: justify;
-    bottom: 0px;
+    top: 600px;
     height: fit-content;
 }
 
