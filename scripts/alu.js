@@ -176,11 +176,17 @@ startBtn.onclick = function () {
 
                 result.textContent = 0;
 
+            } else if (o1.value != "" && parseInt(o2.value) == 0) {
+
+                result.textContent = "Infinite";
+                of.textContent = 1;
+                
             } else if (o1.value == "" ^ o2.value == "") {
 
                 if (o1.value != "") {
 
-                    result.textContent = "Infinity";
+                    result.textContent = "Infinite";
+                    of.textContent = 1;
 
                 } else {
 
@@ -189,6 +195,8 @@ startBtn.onclick = function () {
                 }
 
             } else {
+
+
 
                 result.textContent = parseInt(parseInt(o1.value) / parseInt(o2.value));
 

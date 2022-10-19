@@ -28,3 +28,6 @@ v0.1.2:
 
 v0.2:
     - ALU completada (en fase de testeo)
+
+v0.2.1:
+    - Se ha corregido un error que impedia mostrar ciertos indicadores *flag* al comparar o1 con o2.
