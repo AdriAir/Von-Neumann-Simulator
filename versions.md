@@ -19,3 +19,6 @@ v0.1:
     - Se ha realizado una limpieza de la estructura del código de la aplicación
     - Se han realizado mejoras y cambios en el diseño de la aplicación
     - Se han corregido errores de direccionamiento
+
+v0.1.1:
+    - Se ha comenzado el desarrollo de la simulación de la ALU
