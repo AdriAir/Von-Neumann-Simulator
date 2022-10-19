@@ -28,147 +28,270 @@ o2.onchange = function () {
 
 startBtn.onclick = function () {
 
-    of.textContent = 0;
-    sf.textContent = 0;
-    zf.textContent = 0;
+    if ((o2.value > 127 || o2.value < -128) || (o1.value > 127 || o1.value < -128)) {
 
-    if (action_value == "add") {
+        alert("Los valores de O1 y O2 deben estar entre el -128 y el 127");
 
-        if (o1.value == "" && o2.value == "") {
+    } else {
 
-            result.textContent = 0;
+        of.textContent = 0;
+        sf.textContent = 0;
+        zf.textContent = 0;
 
-        } else if (o1.value == "" ^ o2.value == "") {
+        if (action_value == "add") {
 
-            if (o1.value != "") {
+            if (o1.value == "" && o2.value == "") {
 
-                result.textContent = o1.value;
+                result.textContent = 0;
 
-            } else {
+            } else if (o1.value == "" ^ o2.value == "") {
 
-                result.textContent = o2.value;
+                if (o1.value != "") {
 
-            }
+                    result.textContent = o1.value;
 
-        } else {
+                } else {
 
-            result.textContent = parseInt(o1.value) + parseInt(o2.value);
+                    result.textContent = o2.value;
 
-        }
-
-    } else if (action_value == "subtract") {
-
-        if (o1.value == "" && o2.value == "") {
-
-            result.textContent = 0;
-
-        } else if (o1.value == "" ^ o2.value == "") {
-
-            if (o1.value != "") {
-
-                result.textContent = o1.value;
+                }
 
             } else {
 
-                result.textContent = 0 - o2.value;
+                result.textContent = parseInt(o1.value) + parseInt(o2.value);
 
             }
 
-        } else {
+            // Flags
+            if (parseInt(result.textContent) == 0) {
 
-            result.textContent = parseInt(o1.value) - parseInt(o2.value);
+                zf.textContent = 1;
 
-        }
-    } else if (action_value == "multiply") {
+            } else if (parseInt(result.textContent) < 0 && parseInt(result.textContent) >= -128) {
 
-        if (o1.value == "" && o2.value == "") {
+                sf.textContent = 1;
 
-            result.textContent = 0;
+            } else if (parseInt(result.textContent) > 127) {
 
-        } else if (o1.value == "" ^ o2.value == "") {
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) - 256;
 
-            if (o1.value != "") {
+            } else if (parseInt(result.textContent) < -128) {
 
-                result.textContent = o1.value * 0;
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) + 256;
+            }
+
+        } else if (action_value == "subtract") {
+
+            if (o1.value == "" && o2.value == "") {
+
+                result.textContent = 0;
+
+            } else if (o1.value == "" ^ o2.value == "") {
+
+                if (o1.value != "") {
+
+                    result.textContent = o1.value;
+
+                } else {
+
+                    result.textContent = 0 - o2.value;
+
+                }
 
             } else {
 
-                result.textContent = 0 * o2.value;
+                result.textContent = parseInt(o1.value) - parseInt(o2.value);
 
             }
 
-        } else {
+            // Flags
+            if (parseInt(result.textContent) == 0) {
 
-            result.textContent = parseInt(o1.value) * parseInt(o2.value);
+                zf.textContent = 1;
 
-        }
-    } else if (action_value == "divide") {
+            } else if (parseInt(result.textContent) < 0 && parseInt(result.textContent) >= -128) {
 
-        if (o1.value == "" && o2.value == "") {
+                sf.textContent = 1;
 
-            result.textContent = 0;
+            } else if (parseInt(result.textContent) > 127) {
 
-        } else if (o1.value == "" ^ o2.value == "") {
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) - 256;
 
-            if (o1.value != "") {
+            } else if (parseInt(result.textContent) < -128) {
 
-                result.textContent = "Infinity";
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) + 256;
+            }
+
+        } else if (action_value == "multiply") {
+
+            if (o1.value == "" && o2.value == "") {
+
+                result.textContent = 0;
+
+            } else if (o1.value == "" ^ o2.value == "") {
+
+                if (o1.value != "") {
+
+                    result.textContent = o1.value * 0;
+
+                } else {
+
+                    result.textContent = 0 * o2.value;
+
+                }
 
             } else {
 
-                result.textContent = 0 / o2.value;
+                result.textContent = parseInt(o1.value) * parseInt(o2.value);
 
             }
 
-        } else {
+            // Flags
+            if (parseInt(result.textContent) == 0) {
 
-            result.textContent = parseInt(parseInt(o1.value) / parseInt(o2.value));
+                zf.textContent = 1;
 
-        }
-    } else if (action_value == "compare") {
+            } else if (parseInt(result.textContent) < 0 && parseInt(result.textContent) >= -128) {
 
-        if (o1.value == o2.value) {
+                sf.textContent = 1;
 
-            zf.textContent = 1;
+            } else if (parseInt(result.textContent) > 127) {
 
-        } else if (o1.value != o2.value) {
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) - 256;
 
-            if ((parseInt(o1.value) - parseInt(o2.value)) < 0) {
+            } else if (parseInt(result.textContent) < -128) {
+
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) + 256;
+            }
+
+        } else if (action_value == "divide") {
+
+            if (o1.value == "" && o2.value == "") {
+
+                result.textContent = 0;
+
+            } else if (o1.value == "" ^ o2.value == "") {
+
+                if (o1.value != "") {
+
+                    result.textContent = "Infinity";
+
+                } else {
+
+                    result.textContent = 0 / o2.value;
+
+                }
+
+            } else {
+
+                result.textContent = parseInt(parseInt(o1.value) / parseInt(o2.value));
+
+            }
+
+            // Flags
+            if (parseInt(result.textContent) == 0) {
+
+                zf.textContent = 1;
+
+            } else if (parseInt(result.textContent) < 0 && parseInt(result.textContent) >= -128) {
+
+                sf.textContent = 1;
+
+            } else if (parseInt(result.textContent) > 127) {
+
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) - 256;
+
+            } else if (parseInt(result.textContent) < -128) {
+
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) + 256;
+            }
+
+        } else if (action_value == "compare") {
+
+            if (o1.value == o2.value) {
+
+                zf.textContent = 1;
+
+            } else if (o1.value == "" ^ o2.value == "") {
+
+                if (o1.value != "") {
+
+                    if (parseInt(o1.value) == 0) {
+
+                        zf.textContent = 1;
+
+                    } else if (parseInt(o1.value) < 0) {
+
+                        sf.textContent = 1;
+
+                    }
+
+                } else if (o2.value != "") {
+
+                    if (parseInt(o2.value) == 0) {
+
+                        zf.textContent = 1;
+
+                    } else if (parseInt(o2.value) < 0) {
+
+                        sf.textContent = 1;
+
+                    }
+                }
+            }
+
+            if (o1.value != o2.value) {
+
+                if ((parseInt(o1.value) - parseInt(o2.value)) < 0) {
+
+                    sf.textContent = 1;
+
+                }
+
+            }
+
+            if ((parseInt(o1.value) - parseInt(o2.value)) < -128) {
+
+                of.textContent = 1;
+                sf.textContent = 0;
+
+            } else if ((parseInt(o1.value) - parseInt(o2.value)) > 127) {
+
+                of.textContent = 1;
+                sf.textContent = 1;
+
+            } else if (parseInt(result.textContent) < -128) {
+
+                of.textContent = 1;
+                result.textContent = parseInt(result.textContent) + 256;
+            }
+
+        } else if (action_value == "transfer") {
+
+            if (o1.value != "") {
+                result.textContent = o1.value
+            } else {
+                result.textContent = 0;
+            }
+
+            // Flags
+            if (parseInt(result.textContent) == 0) {
+
+                zf.textContent = 1;
+
+            } else if (parseInt(result.textContent) < 0) {
 
                 sf.textContent = 1;
 
             }
-
-        } else if (o1.value == "" ^ o2.value == "") {
-
-            if (o1.value != "") {
-
-                if (o1.value == 0) {
-
-                    zf.textContent = 1;
-
-                } else if (o1.value < 0) {
-
-                    sf.textContent = 1;
-
-                }
-
-            } else {
-
-                if (o2.value == 0) {
-
-                    zf.textContent = 1;
-
-                } else if (o2.value < 0) {
-
-                    sf.textContent = 1;
-
-                }
-
-            }
-
         }
-
     }
-
 }

@@ -25,3 +25,6 @@ v0.1.1:
 
 v0.1.2:
     - Avance en la ALU
+
+v0.2:
+    - ALU completada (en fase de testeo)
