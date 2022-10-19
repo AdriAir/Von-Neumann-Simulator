@@ -22,3 +22,6 @@ v0.1:
 
 v0.1.1:
     - Se ha comenzado el desarrollo de la simulación de la ALU
+
+v0.1.2:
+    - Avance en la ALU

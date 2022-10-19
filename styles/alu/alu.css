@@ -1,4 +1,4 @@
-body{
+body {
     margin: 0px;
 }
 
@@ -8,6 +8,7 @@ body{
     height: 500px;
     width: 700px;
 }
+
 #simulatorImg {
     height: calc(646px + 20%);
     width: calc(452px + 20%);
@@ -32,22 +33,23 @@ body{
     /* color: white; */
 }
 
-#alu-o1{
+#alu-o1 {
     position: absolute;
     left: 200px;
     top: 22px;
     width: 97px;
     height: 20px;
 }
-#alu-o2{
+
+#alu-o2 {
     position: absolute;
-    left: 350px;    
+    left: 350px;
     top: 22px;
     width: 97px;
     height: 20px;
 }
 
-#alu-c1{
+#alu-c1 {
     position: absolute;
     left: 500px;
     top: 156px;
@@ -55,10 +57,39 @@ body{
     height: 30px;
 }
 
-#alu-c2{
+#alu-c2 {
     position: absolute;
     left: 500px;
     top: 195px;
     width: 100px;
     height: 30px;
+}
+
+#alu-a {
+    position: absolute;
+    top: 338px;
+    left: 270px;
+    width: 108px;
+    height: 20px;
+}
+#alu-of {
+    position: absolute;
+    top: 338px;
+    left: 89px;
+    width: 30px;
+    height: 20px;
+}
+#alu-sf {
+    position: absolute;
+    top: 338px;
+    left: 128px;
+    width: 30px;
+    height: 20px;
+}
+#alu-zf {
+    position: absolute;
+    top: 338px;
+    left: 167px;
+    width: 30px;
+    height: 20px;
 }

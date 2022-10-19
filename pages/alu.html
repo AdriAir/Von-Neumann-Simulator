@@ -21,6 +21,10 @@
             <img src="../img/alu.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
             <input type="number" id="alu-o1" placeholder="-128/127" min="-128" max="127">
             <input type="number" id="alu-o2" placeholder="-128/127" min="-128" max="127">
+            <div id="alu-a"></div>
+            <div id="alu-of"></div>
+            <div id="alu-sf"></div>
+            <div id="alu-zf"></div>
             <select name="c1" id="alu-c1">
                 <option value="add">Sumar</option>
                 <option value="subtract">Restar</option>
@@ -34,6 +38,7 @@
             </button>
         </center>
     </div>
+    <script src="../scripts/alu.js"></script>
 </body>
 
 </html>
