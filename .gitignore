@@ -1,0 +1,24 @@
+# Ignorar node_modules
+node_modules/
+
+# Ignorar build/ y dist/
+build/
+dist/
+
+# Ignorar archivos de configuración de IDE
+.vscode/
+.idea/
+
+# Ignorar archivos temporales
+*.log
+*.tmp
+
+# Ignorar archivos de configuración de Next.js
+.next/
+
+# Ignorar archivos de configuración de Gatsby
+.cache/
+public/
+
+# Ignorar archivos de configuración de TypeScript
+out/
