@@ -7,4 +7,16 @@
   text-align: center;
   align-items: center;
   width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: $border-color;
+    border-bottom: 2px $button-hover-color solid;
+  }
+}
+
+.active {
+  background-color: $border-color;
 }
