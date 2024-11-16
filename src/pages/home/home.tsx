@@ -1,4 +1,5 @@
-import BaseButton from "../../components/ui/buttons/base-button.tsx";
+import {BaseButton} from "../../components"
+import {Link} from "react-router-dom";
 
 function Home() {
 
@@ -6,7 +7,9 @@ function Home() {
         <>
             Home
             <section>
-                <BaseButton text={"CPU"}></BaseButton>
+                <BaseButton text={"CPU"}>
+                    <Link to={}/>
+                </BaseButton>
                 <BaseButton text={"UC"}></BaseButton>
                 <BaseButton text={"ALU"}></BaseButton>
                 <BaseButton text={"Memory"}></BaseButton>

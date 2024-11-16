@@ -2,7 +2,6 @@ function Cpu() {
 
     return (
         <>
-            {/*App Main Layout*/}
         </>
     )
 }

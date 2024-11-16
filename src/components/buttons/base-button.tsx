@@ -1,7 +1,9 @@
 function BaseButton({text}: { text: string }) {
 
     return (
-        <button>{text}</button>
+        <button>
+            {text}
+        </button>
     )
 }
 
