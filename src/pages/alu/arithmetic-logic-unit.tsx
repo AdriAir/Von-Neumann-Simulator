@@ -1,6 +1,8 @@
-export default function ArithmeticLogicUnit() {
+function ArithmeticLogicUnit() {
 
     return <div>
         Alu
     </div>
 }
+
+export default ArithmeticLogicUnit

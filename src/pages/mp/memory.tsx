@@ -1,6 +1,8 @@
-export default function Memory() {
+function Memory() {
 
     return <div>
         Memory
     </div>
 }
+
+export default Memory
