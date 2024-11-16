@@ -1,15 +1,17 @@
 import {createRoot} from 'react-dom/client'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {Home} from "./pages/home";
 import {Cpu} from "./pages/cpu";
-import {AppLayout} from "./pages";
+import {AppLayout, ArithmeticLogicUnit, ControlUnit, Memory} from "./pages";
+import {APP_ROUTES} from "./utils";
 
 createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<AppLayout/>}>
-                <Route index element={<Home/>}/>
-                <Route path={"/cpu"} element={<Cpu/>}/>
+                <Route index element={<Cpu/>}/>
+                <Route path={APP_ROUTES.ALU} element={<ArithmeticLogicUnit/>}/>
+                <Route path={APP_ROUTES.UC} element={<ControlUnit/>}/>
+                <Route path={APP_ROUTES.MP} element={<Memory/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
