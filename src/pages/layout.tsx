@@ -9,8 +9,8 @@ export default function AppLayout() {
     const navigate = useNavigate()
     const buttonsMapping: ButtonsMappingType = [
         {
-            text: "CPU",
-            onClick: () => navigate(APP_ROUTES.CPU)
+            text: "Home",
+            onClick: () => navigate("/")
         },
         {
             text: "UC",
