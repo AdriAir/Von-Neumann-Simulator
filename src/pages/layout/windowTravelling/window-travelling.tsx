@@ -4,7 +4,7 @@ import SingleTab from "./singleTab.tsx";
 
 type ButtonsMappingType = { text: string, onClick: Function }[]
 
-export default function WindowTravelling() {
+function WindowTravelling() {
 
     const navigate = useNavigate()
     const buttonsMapping: ButtonsMappingType = [
@@ -32,3 +32,5 @@ export default function WindowTravelling() {
         ))}
     </div>
 }
+
+export default WindowTravelling

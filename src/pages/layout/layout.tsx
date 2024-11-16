@@ -1,7 +1,7 @@
 import {Outlet} from "react-router-dom";
 import WindowTravelling from "./windowTravelling/window-travelling.tsx";
 
-export default function AppLayout() {
+function AppLayout() {
 
 
     return <div>
@@ -10,3 +10,5 @@ export default function AppLayout() {
         <Outlet/>
     </div>
 }
+
+export default AppLayout
