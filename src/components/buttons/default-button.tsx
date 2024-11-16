@@ -1,9 +1,9 @@
-import "./button.scss";
+import "./default-button.scss";
 
 function DefaultButton({text}: { text: string }) {
     return (
         <>
-            <section className="button-rapper">
+            <section className="button-wrapper">
                 {text}
             </section>
         </>

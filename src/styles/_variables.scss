@@ -1,31 +1,31 @@
 // Colores base
-$primary-color: #3498db; // Azul brillante
-$secondary-color: #2ecc71; // Verde vibrante
-$accent-color: #e74c3c; // Rojo de acento
+$primary-color: #6200ea; // Púrpura profundo (Material Design)
+$secondary-color: #03dac6; // Teal suave (Material Design)
+$accent-color: #ff4081; // Rosa de acento (Material Design)
 
 // Colores neutros
-$background-color: #f4f6f8; // Gris claro (fondo)
-$text-color: #333333; // Gris oscuro para el texto
-$subtle-text-color: #7f8c8d; // Gris suave para textos secundarios
-$border-color: #ddd; // Color de bordes
+$background-color: #f5f5f5; // Gris claro (fondo) – tono Apple
+$text-color: #212121; // Gris oscuro para el texto (Material Design)
+$subtle-text-color: #757575; // Gris suave para textos secundarios (Material Design)
+$border-color: #e0e0e0; // Color de bordes suaves (Apple)
 
 // Colores de estado
-$success-color: #28a745; // Verde éxito
-$error-color: #dc3545; // Rojo error
-$warning-color: #f39c12; // Naranja advertencia
-$info-color: #17a2b8; // Azul información
+$success-color: #4caf50; // Verde éxito (Material Design)
+$error-color: #f44336; // Rojo error (Material Design)
+$warning-color: #ff9800; // Naranja advertencia (Material Design)
+$info-color: #2196f3; // Azul información (Material Design)
 
 // Colores para elementos de interfaz
-$button-color: $primary-color; // Botones con color principal
-$button-hover-color: opacity($primary-color, 90%); // Botón al pasar el cursor (más claro)
-$input-border-color: $border-color; // Color del borde de los inputs
+$button-color: $primary-color; // Botones con color principal (Material Design)
+$button-hover-color: rgba($primary-color, 0.8); // Botón al pasar el cursor (más suave)
+$input-border-color: $border-color; // Color del borde de los inputs (Apple)
 $input-focus-color: $primary-color; // Color cuando el input tiene foco
 
 // Colores de gradientes
-$gradient-primary: linear-gradient(135deg, #3498db, #2ecc71); // De azul a verde
-$gradient-secondary: linear-gradient(135deg, #e74c3c, #f39c12); // De rojo a naranja
+$gradient-primary: linear-gradient(135deg, #6200ea, #03dac6); // Púrpura a Teal (Material)
+$gradient-secondary: linear-gradient(135deg, #ff4081, #ff9800); // Rosa a Naranja (Material)
 
 // Colores de sombras
-$shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra sutil
-$shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.2); // Sombra moderada
-$shadow-heavy: 0 10px 20px rgba(0, 0, 0, 0.3); // Sombra más fuerte
+$shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1); // Sombra sutil (Apple)
+$shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15); // Sombra moderada (Material)
+$shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.2); // Sombra más fuerte (Material)
