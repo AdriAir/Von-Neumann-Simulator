@@ -29,8 +29,8 @@ export default function AppLayout() {
     return <div>
         Layout
         <section>
-            {buttonsMapping.map((props) => (
-                <BaseButton props={props}/>
+            {buttonsMapping.map((props, idx) => (
+                <BaseButton key={idx} props={props}/>
             ))}
         </section>
         <Outlet/>

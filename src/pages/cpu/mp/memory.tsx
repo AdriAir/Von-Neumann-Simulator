@@ -1,9 +1,9 @@
 function Memory() {
 
     return (
-        <>
-            {/*App Main Layout*/}
-        </>
+        <div>
+            Memory
+        </div>
     )
 }
 
