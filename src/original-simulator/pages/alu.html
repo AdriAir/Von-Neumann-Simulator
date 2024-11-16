@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/alu/alu.css">
+    <link rel="stylesheet" href="../styles/vars.css">
+    <title>Unidad Aritmética - Lógica</title>
+</head>
+
+<body>
+    <a href="../index.html">
+        <button id="returnToMenu" >
+            Menú
+        </button>
+    </a>
+    <div id="simulator">
+        <center>
+            <img src="../img/alu.png" id="simulatorImg" oncontextmenu="return false;" ondragstart="return false;">
+            <input type="number" id="alu-o1" placeholder="-128/127" min="-128" max="127">
+            <input type="number" id="alu-o2" placeholder="-128/127" min="-128" max="127">
+            <div id="alu-a"></div>
+            <div id="alu-of"></div>
+            <div id="alu-sf"></div>
+            <div id="alu-zf"></div>
+            <select name="c1" id="alu-c1">
+                <option value="add">Sumar</option>
+                <option value="subtract">Restar</option>
+                <option value="multiply">Multiplicar</option>
+                <option value="divide">Dividir</option>
+                <option value="compare">Comparar</option>
+                <option value="transfer">Transferir</option>
+            </select>
+            <button id="alu-c2">
+                Iniciar
+            </button>
+        </center>
+    </div>
+    <script src="../scripts/alu.js"></script>
+</body>
+
+</html>

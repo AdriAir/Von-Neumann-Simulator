@@ -1,0 +1,3471 @@
+From: "Guardado por Microsoft Internet Explorer 7"
+Subject: Unidad Central de Procesamiento
+Date: Tue, 18 Oct 2011 19:39:11 +0200
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----=_NextPart_000_0000_01CC8DCD.9C7CF9F0"
+X-MimeOLE: Produced By Microsoft MimeOLE V6.0.6002.18463
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file://E:\CosasEnric\SIMM_ASI\Tema1_Introduccion\Tema2_ArquitecturaGeneral_AUX\Simulador LSPC\simulacion\uc.html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Unidad Central de Procesamiento</TITLE>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<STYLE type=3Dtext/css>.reg {
+	BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-WEIGHT: bold; =
+FONT-SIZE: 10pt; BORDER-LEFT: medium none; COLOR: black; BORDER-BOTTOM: =
+medium none; HEIGHT: 18px
+}
+.regC {
+	BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-WEIGHT: bold; =
+FONT-SIZE: 10pt; BORDER-LEFT: medium none; COLOR: red; BORDER-BOTTOM: =
+medium none; HEIGHT: 18px
+}
+.regF {
+	BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-WEIGHT: bold; =
+FONT-SIZE: 10pt; BORDER-LEFT: medium none; WIDTH: 10px; COLOR: black; =
+BORDER-BOTTOM: medium none; HEIGHT: 18px
+}
+.regFC {
+	BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-WEIGHT: bold; =
+FONT-SIZE: 10pt; BORDER-LEFT: medium none; WIDTH: 10px; COLOR: red; =
+BORDER-BOTTOM: medium none; HEIGHT: 18px
+}
+.celdaN {
+	BORDER-RIGHT: white thin solid; BORDER-TOP: white thin solid; =
+FONT-WEIGHT: bold; FONT-SIZE: 8pt; BORDER-LEFT: white thin solid; WIDTH: =
+104px; COLOR: black; BORDER-BOTTOM: white thin solid; HEIGHT: 18px
+}
+.celdaA {
+	BORDER-RIGHT: green thin solid; BORDER-TOP: green thin solid; =
+FONT-WEIGHT: bold; FONT-SIZE: 8pt; BORDER-LEFT: green thin solid; WIDTH: =
+104px; COLOR: blue; BORDER-BOTTOM: green thin solid; HEIGHT: 18px
+}
+.celdaC {
+	BORDER-RIGHT: green thin solid; BORDER-TOP: green thin solid; =
+FONT-WEIGHT: bold; FONT-SIZE: 8pt; BORDER-LEFT: green thin solid; WIDTH: =
+104px; COLOR: red; BORDER-BOTTOM: green thin solid; HEIGHT: 18px
+}
+.cabecera {
+	FONT: bold 18pt sans-serif; COLOR: white
+}
+.apartado {
+	FONT: bold 14pt sans-serif; COLOR: white
+}
+BODY {
+	FONT-SIZE: 10pt; FONT-FAMILY: sans-serif
+}
+TABLE {
+	FONT-SIZE: 10pt; FONT-FAMILY: sans-serif
+}
+</STYLE>
+
+<SCRIPT language=3DJavaScript=20
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/asm.js"></SCRIPT>
+
+<SCRIPT language=3DJavaScript=20
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/comun_uc_cpu.js"></SCRIPT>
+
+<SCRIPT language=3DJavaScript>
+		// Funcionamiento de la m=E1quina
+		var p =3D 0;
+		var estado =3D 0;
+		var paso =3D 0;
+		var inst;
+
+		function pulso()
+		{
+		=09
+			p++;
+			apagarTodo();
+		=09
+			// RDM <- CP
+			if (estado =3D=3D 0) {
+				signals.value =3D "Fase b=FAsqueda (Captar Instrucci=F3n):\n";
+				signals.value +=3D "["+p+"] RDM <- CP\n";
+				signals.value +=3D "Se=F1alRDM: Cargar desde CP\n";
+
+				rdm.value =3D cp.value;
+				iluminar("rdm");
+				iluminar("m" + rdm.value);
+			=09
+				estado++;
+			}
+			// RIM <- M(RDM)
+			else if (estado =3D=3D 1) {
+				signals.value =3D "["+p+"] RIM <- M(RDM)\n";
+				signals.value +=3D "se=F1alMem: Leer\n";
+				signals.value +=3D "Se=F1alRIM: Cargar desde memoria\n";
+
+				eval("rim.value =3D m"+ rdm.value +".value;");
+				iluminar("rim");
+			=09
+				estado++;
+			}
+			// RI <- RIM
+			else if (estado =3D=3D 2) {
+				signals.value =3D "["+p+"] RI <- RIM\n";
+				signals.value +=3D "Se=F1alRI: Cargar\n";
+
+				ri.value =3D rim.value;
+				iluminar("ri");
+
+				inst =3D analizar(ri.value);
+				codOp.value =3D inst.o;
+				iluminar("codOp");
+			=09
+				if (inst.type =3D=3D 1) {
+					ra.value =3D "";
+					rb.value =3D "";
+					m.value =3D inst.a.charAt(1);
+					iluminar("m");
+				}
+				else if (inst.type =3D=3D 2) {
+					ra.value =3D inst.a;
+					rb.value =3D inst.b;
+					m.value =3D "";
+					iluminar("ra");
+					iluminar("rb");
+				}
+				else {
+					ra.value =3D "";
+					rb.value =3D "";
+					m.value =3D "";
+				}
+			=09
+				estado++;
+			}
+			// Fase ejecuci=F3n
+			else if (estado =3D=3D 3) {
+				p--;
+			=09
+				if (paso =3D=3D 0)
+					signals.value =3D "Fase de ejecuci=F3n:\n";
+				=09
+				if (inst.type =3D=3D 1) {
+					if (inst.o =3D=3D "CAR") {
+						// RDM <- m
+						if (paso =3D=3D 0) {
+							signals.value +=3D "["+p+", "+ (paso+1) +"] RDM <- m\n";
+							signals.value +=3D "Se=F1alRDM: Cargar desde m\n";
+						=09
+							rdm.value =3D m.value;
+							iluminar("rdm");
+							paso++;
+						}
+						// RIM <- M(RDM)
+						else if (paso =3D=3D 1) {
+							signals.value =3D "["+p+", "+ (paso+1) +"] RIM <- M(RDM)\n";
+							signals.value +=3D "Se=F1alMem: Leer\n";
+							signals.value +=3D "Se=F1alRIM: Cargar desde memoria\n";
+						=09
+							eval("rim.value =3D m"+ rdm.value +".value;");
+							iluminar("rim");
+							paso++;
+						}
+						// r0 <- RIM
+						else if (paso =3D=3D 2) {
+							signals.value =3D "["+p+", "+ (paso+1) +"] r0 <- RIM\n";
+							signals.value +=3D "Se=F1alRegistro: r0 <- RIM\n";
+						=09
+							r0.value =3D rim.value;
+							iluminar("r0");
+							paso =3D 0;
+							estado ++;
+						}
+					}
+					else if (inst.o =3D=3D "ALM") {
+						// RDM <- m
+						if (paso =3D=3D 0) {
+							signals.value +=3D "["+p+", "+ (paso+1) +"] RDM <- m\n";
+							signals.value +=3D "Se=F1alRDM: Cargar desde m\n";
+						=09
+							rdm.value =3D m.value;
+							iluminar("rdm");
+							paso++;
+						}
+						// RIM <- r0
+						else if (paso =3D=3D 1) {
+							signals.value =3D "["+p+", "+ (paso+1) +"] r0 <- RIM\n";
+							signals.value +=3D "Se=F1alRIM: Cargar desde r0\n";
+						=09
+							rim.value =3D r0.value;
+							iluminar("rim");
+							paso++;
+						}
+						// M(RDM) <- RIM
+						else if (paso =3D=3D 2) {
+							signals.value =3D "["+p+", "+ (paso+1) +"] M(RDM) <- RIM\n";
+							signals.value +=3D "Se=F1alMem: Escribir\n";
+						=09
+							eval("m"+ rdm.value +".value =3D rim.value;");
+							iluminar("m"+ rdm.value);
+						=09
+							paso =3D 0;
+							estado++;
+						}
+					}
+					else if (inst.o =3D=3D "SAL"){
+						signals.value +=3D "["+p+", "+ (paso+1) +"] CP <- m\n";
+						signals.value +=3D "Se=F1alCP: Cargar desde m\n";
+						signals.value +=3D "Fase de ejecuci=F3n finalizada:\n";
+						signals.value +=3D "(Salto efectuado)\n";
+					=09
+						cp.value =3D m.value;
+						iluminar("cp");
+						estado =3D 0;
+					}
+					else if (inst.o =3D=3D "SIG"){
+						signals.value +=3D "["+p+", "+ (paso+1) +"] Si ZF=3D1 entonces CP =
+<- m\n";
+
+						if (zf.value =3D=3D "1") {
+							signals.value +=3D "Se=F1alCP: Cargar desde m\n";
+							signals.value +=3D "Fase de ejecuci=F3n finalizada:\n";
+							signals.value +=3D "(Salto efectuado)\n";
+
+							cp.value =3D m.value;
+							iluminar("cp");
+							estado =3D 0;
+						}
+						else {
+							signals.value +=3D "(No hay se=F1ales)\n";
+							signals.value +=3D "(Salto no efectuado)\n";
+							estado++;
+						}
+					}
+					else if (inst.o =3D=3D "SMA"){
+						signals.value +=3D "["+p+", "+ (paso+1) +"] Si ZF=3D0 y SF=3D0 =
+entonces CP <- m\n";
+
+						if ((zf.value =3D=3D "0") && (sf.value =3D=3D "0")) {
+							signals.value +=3D "Se=F1alCP: Cargar desde m\n";
+							signals.value +=3D "Fase de ejecuci=F3n finalizada:\n";
+							signals.value +=3D "(Salto efectuado)\n";
+
+							cp.value =3D m.value;
+							iluminar("cp");
+							estado =3D 0;
+						}
+						else {
+							signals.value +=3D "(No hay se=F1ales)\n";
+							signals.value +=3D "(Salto no efectuado)\n";
+							estado++;
+						}
+					}
+					else if (inst.o =3D=3D "SME"){
+						signals.value +=3D "["+p+", "+ (paso+1) +"] Si SF !=3D OF entonces =
+CP <- m\n";
+
+						if (of.value !=3D sf.value) {
+							signals.value +=3D "Se=F1alCP: Cargar desde m\n";
+							signals.value +=3D "Fase de ejecuci=F3n finalizada:\n";
+							signals.value +=3D "(Salto efectuado)\n";
+
+							cp.value =3D m.value;
+							iluminar("cp");
+							estado =3D 0;
+						}
+						else {
+							signals.value +=3D "(No hay se=F1ales)\n";
+							signals.value +=3D "(Salto no efectuado)\n";
+							estado++;
+						}
+					}
+				}
+				else if (inst.type =3D=3D 2) {
+					if (inst.o =3D=3D "COP") {
+						signals.value +=3D "["+p+", "+ (paso+1) +"] "+ inst.b +" <- "+ =
+inst.a +"\n";
+						signals.value +=3D "Se=F1alRa: Seleccionar "+ inst.a +" (Op1 =3D =
+"+ inst.a +")\n";
+						signals.value +=3D "Se=F1alALU: Transferir (Result. =3D Op1)\n";
+						signals.value +=3D "Se=F1alRegistro: "+ inst.b +" <- Resultado\n";
+					=09
+						eval(inst.b +".value =3D "+ inst.a +".value;");
+						iluminar(inst.b);
+					}
+					else if (inst.o =3D=3D "CMP") {
+						signals.value +=3D "["+p+", "+ (paso+1) +"] Comparar "+ inst.a +" =
+con "+ inst.b +"\n";
+						signals.value +=3D "Se=F1alRa: Seleccionar "+ inst.a +" (Op1 =3D =
+"+ inst.a +")\n";
+						signals.value +=3D "Se=F1alRb: Seleccionar "+ inst.b +" (Op2 =3D =
+"+ inst.b +")\n";
+						signals.value +=3D "Se=F1alALU: Comparar\n";
+					=09
+						eval("alu("+ inst.a +".value, "+ inst.b +".value, 'C');");
+					}
+					else {
+						var oper =3D new Array();
+						oper["SUM"] =3D "+";
+						oper["RES"] =3D "-";
+						oper["MUL"] =3D "*";
+						oper["DIV"] =3D "/";
+
+						var operS =3D new Array();
+						operS["SUM"] =3D "Sumar";
+						operS["RES"] =3D "Restar";
+						operS["MUL"] =3D "Multiplicar";
+						operS["DIV"] =3D "Dividir";
+					=09
+						signals.value +=3D "["+p+", "+ (paso+1) +"] r0 <- "+ inst.a +" "+ =
+oper[inst.o] +" "+ inst.b +"\n";
+						signals.value +=3D "Se=F1alRa: Seleccionar "+ inst.a +" (Op1 =3D =
+"+ inst.a +")\n";
+						signals.value +=3D "Se=F1alRb: Seleccionar "+ inst.b +" (Op2 =3D =
+"+ inst.b +")\n";
+						signals.value +=3D "Se=F1alALU: "+ operS[inst.o] +"\n";
+						signals.value +=3D "Se=F1alRegistro: r0 <- Resultado\n";
+					=09
+						eval("alu("+ inst.a +".value, "+ inst.b +".value, '"+ =
+inst.o.charAt(0) +"');");
+					}
+
+					paso =3D 0;
+					estado ++;
+				}
+				else if (inst.type =3D=3D 3) {
+					if (inst.o =3D=3D "NOP") {
+						signals.value +=3D "["+p+"] (No hay se=F1ales)\n";
+				=09
+						estado++;
+					}
+				}
+			}
+			// CP <- CP + 1
+			else if (estado =3D=3D 4) {
+				if (cp.value =3D=3D "F") {
+					signals.value =3D "["+p+"] No se puede continuar, reinicie la =
+m=E1quina\n";
+				}
+				else {
+					signals.value =3D "Fase de ejecuci=F3n finalizada:\n";
+					signals.value +=3D "["+p+"] CP <- CP + 1\n";
+					signals.value +=3D "Se=F1alCP: Cargar desde +1\n";
+
+					cp.value =3D mem[find(mem, cp.value) + 1];
+					iluminar("cp");
+			=09
+					estado =3D 0;
+				}
+			}
+
+			apagarMem();
+		}
+	=09
+		function reset()
+		{
+			p =3D 0;
+			estado =3D 0;
+			paso =3D 0;
+
+			r0.value =3D "";
+			r1.value =3D "";
+			r2.value =3D "";
+			r3.value =3D "";
+		=09
+			of.value =3D "";
+			sf.value =3D "";
+			zf.value =3D "";
+		=09
+			rim.value =3D "";
+			rdm.value =3D "";
+		=09
+			ri.value =3D "";
+			cp.value =3D 4;
+			iluminar("cp");
+		=09
+			codOp.value =3D "";
+			ra.value =3D "";
+			rb.value =3D "";
+			m.value =3D "";
+		=09
+			signals.value =3D "";
+		=09
+			//programa1();
+			cargar();
+		}
+	=09
+		function programa1()
+		{
+			p0.value =3D "2";
+			p1.value =3D "3";
+			p2.value =3D "";
+			p3.value =3D "";
+	=09
+			p4.value =3D "CAR m0";
+			p5.value =3D "COP r0, r1";
+			p6.value =3D "CAR m1";
+			p7.value =3D "SUM r0, r1";
+		}
+	=09
+		function apagarTodo()
+		{
+			apagar("r0");
+			apagar("r1");
+			apagar("r2");
+			apagar("r3");
+		=09
+			apagar("of");
+			apagar("sf");
+			apagar("zf");
+		=09
+			apagar("rim");
+			apagar("rdm");
+		=09
+			apagar("ri");
+			apagar("cp");
+		=09
+			apagar("codOp");
+			apagar("ra");
+			apagar("rb");
+			apagar("m");
+		}
+	=09
+	</SCRIPT>
+
+<META content=3D"MSHTML 6.00.6002.18510" name=3DGENERATOR></HEAD>
+<BODY leftMargin=3D0 topMargin=3D0 onload=3Dreset() marginheight=3D"0" =
+marginwidth=3D"0">
+<TABLE width=3D"100%" bgColor=3Dgreen border=3D0>
+  <TBODY>
+  <TR>
+    <TD class=3Dcabecera align=3Dmiddle>Esquema de Funcionamiento de la =
+Unidad de=20
+      Control</TD></TR></TBODY></TABLE><BR>
+<DIV align=3Dcenter><INPUT onclick=3Dreset() type=3Dbutton =
+value=3DReset></DIV><BR>
+<TABLE cellSpacing=3D0 cellPadding=3D0 align=3Dcenter border=3D0>
+  <TBODY>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D26=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_1.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D26=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D2><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_2.gif"=20
+      width=3D133 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_3.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm0> </TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_4.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_5.gif=20
+    colSpan=3D4 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm4> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_6.gif"=20
+      width=3D43 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_7.gif=20
+    colSpan=3D7 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm8> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_8.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_9.gif=20
+    colSpan=3D5 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmC> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_10.gif"=20
+      width=3D72 border=3D0></TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_11.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D2><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_12.gif"=20
+      width=3D133 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_13.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm1> </TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_14.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_15.gif=20
+    colSpan=3D4 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm5> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_16.gif"=20
+      width=3D43 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_17.gif=20
+    colSpan=3D7 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm9> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_18.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_19.gif=20
+    colSpan=3D5 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmD> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_20.gif"=20
+      width=3D72 border=3D0></TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_21.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D2><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_22.gif"=20
+      width=3D133 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_23.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm2> </TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_24.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_25.gif=20
+    colSpan=3D4 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm6> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_26.gif"=20
+      width=3D43 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_27.gif=20
+    colSpan=3D7 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmA> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_28.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_29.gif=20
+    colSpan=3D5 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmE> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_30.gif"=20
+      width=3D72 border=3D0></TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_31.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D2><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_32.gif"=20
+      width=3D133 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_33.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm3> </TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_34.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_35.gif=20
+    colSpan=3D4 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3Dm7> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_36.gif"=20
+      width=3D43 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_37.gif=20
+    colSpan=3D7 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmB> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_38.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D116=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_39.gif=20
+    colSpan=3D5 height=3D22><INPUT class=3DceldaN readOnly size=3D13 =
+name=3DmF> </TD>
+    <TD colSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_40.gif"=20
+      width=3D72 border=3D0></TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D50=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_41.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D50=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D4><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_42.gif"=20
+      width=3D221 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D80=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_43.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3Dreg readOnly size=3D8 =
+name=3Drim> </TD>
+    <TD colSpan=3D9><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_44.gif"=20
+      width=3D167 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D75=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_45.gif=20
+    colSpan=3D3 height=3D22><INPUT class=3Dreg readOnly size=3D7 =
+name=3Drdm> </TD>
+    <TD colSpan=3D12><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_46.gif"=20
+      width=3D253 border=3D0></TD>
+    <TD><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D92=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_47.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D92=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D17><IMG height=3D18=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_48.gif"=20
+      width=3D508 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D90=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_49.gif=20
+    colSpan=3D5 height=3D21 rowSpan=3D2><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dri>=20
+</TD>
+    <TD colSpan=3D2 rowSpan=3D2><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_50.gif"=20
+      width=3D47 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D87=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_51.gif=20
+    colSpan=3D5 height=3D21 rowSpan=3D2><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dcp>=20
+</TD>
+    <TD colSpan=3D2 rowSpan=3D2><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_52.gif"=20
+      width=3D64 border=3D0></TD>
+    <TD><IMG height=3D18=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD rowSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_53.gif"=20
+      width=3D87 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D89=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_54.gif=20
+    colSpan=3D2 height=3D22 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dr0>=20
+</TD>
+    <TD colSpan=3D14><IMG height=3D3=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_55.gif"=20
+      width=3D332 border=3D0></TD>
+    <TD><IMG height=3D3=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D28><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_56.gif"=20
+      width=3D620 border=3D0></TD>
+    <TD><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D9><IMG height=3D14=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_57.gif"=20
+      width=3D248 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D36=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_58.gif=20
+    colSpan=3D3 height=3D21 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D2 name=3Dra>=20
+</TD>
+    <TD colSpan=3D16 rowSpan=3D3><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_59.gif"=20
+      width=3D336 border=3D0></TD>
+    <TD><IMG height=3D14=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D12><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_60.gif"=20
+      width=3D424 border=3D0></TD>
+    <TD><IMG height=3D5=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD rowSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_61.gif"=20
+      width=3D87 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D89=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_62.gif=20
+    colSpan=3D2 height=3D22 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dr1>=20
+</TD>
+    <TD colSpan=3D9><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_63.gif"=20
+      width=3D248 border=3D0></TD>
+    <TD><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D28><IMG height=3D9=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_64.gif"=20
+      width=3D620 border=3D0></TD>
+    <TD><IMG height=3D9=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D9><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_65.gif"=20
+      width=3D248 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D36=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_66.gif=20
+    colSpan=3D3 height=3D21 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D2 name=3Drb>=20
+</TD>
+    <TD colSpan=3D16 rowSpan=3D3><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_67.gif"=20
+      width=3D336 border=3D0></TD>
+    <TD><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D12><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_68.gif"=20
+      width=3D424 border=3D0></TD>
+    <TD><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD rowSpan=3D3><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_69.gif"=20
+      width=3D87 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D89=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_70.gif=20
+    colSpan=3D2 height=3D22 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dr2>=20
+</TD>
+    <TD colSpan=3D9><IMG height=3D6=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_71.gif"=20
+      width=3D248 border=3D0></TD>
+    <TD><IMG height=3D6=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D28><IMG height=3D10=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_72.gif"=20
+      width=3D620 border=3D0></TD>
+    <TD><IMG height=3D10=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D11><IMG height=3D6=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_73.gif"=20
+      width=3D275 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D65=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_74.gif=20
+    colSpan=3D4 height=3D21 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D6 name=3DcodOp>=20
+    </TD>
+    <TD colSpan=3D3 rowSpan=3D3><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_75.gif"=20
+      width=3D77 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D90=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_76.gif=20
+    colSpan=3D4 height=3D21 rowSpan=3D3><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dm> </TD>
+    <TD colSpan=3D6 rowSpan=3D3><IMG height=3D21=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_77.gif"=20
+      width=3D113 border=3D0></TD>
+    <TD><IMG height=3D6=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D14><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_78.gif"=20
+      width=3D451 border=3D0></TD>
+    <TD><IMG height=3D4=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD rowSpan=3D2><IMG height=3D22=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_79.gif"=20
+      width=3D87 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D89=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_80.gif=20
+    colSpan=3D2 height=3D22 rowSpan=3D2><INPUT class=3Dreg readOnly =
+size=3D9 name=3Dr3>=20
+</TD>
+    <TD colSpan=3D11><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_81.gif"=20
+      width=3D275 border=3D0></TD>
+    <TD><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D28><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_82.gif"=20
+      width=3D620 border=3D0></TD>
+    <TD><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D30=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_83.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D30=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D8><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_84.gif"=20
+      width=3D319 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D33=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_85.gif=20
+    height=3D25>&nbsp;&nbsp;<INPUT class=3DregF readOnly name=3Dzf> =
+</TD>
+    <TD colSpan=3D22><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_86.gif"=20
+      width=3D444 border=3D0></TD>
+    <TD><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_87.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D8 rowSpan=3D2><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_88.gif"=20
+      width=3D319 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D33=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_89.gif=20
+    height=3D25 rowSpan=3D2>&nbsp;&nbsp;<INPUT class=3DregF readOnly =
+name=3Dsf> </TD>
+    <TD colSpan=3D22><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_90.gif"=20
+      width=3D444 border=3D0></TD>
+    <TD><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D2><IMG height=3D14=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_91.gif"=20
+      width=3D65 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D276=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_92.gif=20
+    colSpan=3D15 height=3D50 rowSpan=3D5><TEXTAREA =
+style=3D"BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-SIZE: =
+8pt; BORDER-LEFT: medium none; BORDER-BOTTOM: medium none" =
+name=3Dsignals rows=3D3 readOnly cols=3D36></TEXTAREA>=20
+    </TD>
+    <TD colSpan=3D5 rowSpan=3D3><IMG height=3D26=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_93.gif"=20
+      width=3D103 border=3D0></TD>
+    <TD><IMG height=3D14=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D11><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_94.gif"=20
+      width=3D417 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D8 rowSpan=3D2><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_95.gif"=20
+      width=3D319 border=3D0></TD>
+    <TD vAlign=3Dtop width=3D33=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_96.gif=20
+    height=3D25 rowSpan=3D2>&nbsp;&nbsp;<INPUT class=3DregF readOnly =
+name=3Dof> </TD>
+    <TD colSpan=3D2 rowSpan=3D2><IMG height=3D25=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_97.gif"=20
+      width=3D65 border=3D0></TD>
+    <TD><IMG height=3D11=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD rowSpan=3D2><IMG height=3D24=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_98.gif"=20
+      width=3D8 border=3D0></TD>
+    <TD vAlign=3Dcenter width=3D37=20
+    =
+background=3Dfile:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arqu=
+itecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_99.gif=20
+    colSpan=3D3 height=3D26 rowSpan=3D3><INPUT style=3D"FONT-WEIGHT: =
+bold; FONT-SIZE: 7pt; WIDTH: 37px; HEIGHT: 26px" onclick=3Dpulso() =
+type=3Dbutton value=3DPulso>=20
+    </TD>
+    <TD rowSpan=3D3><IMG height=3D26=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_100.gif"=20
+      width=3D58 border=3D0></TD>
+    <TD><IMG height=3D14=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D11><IMG height=3D10=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_101.gif"=20
+      width=3D417 border=3D0></TD>
+    <TD><IMG height=3D10=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D27><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_102.gif"=20
+      width=3D701 border=3D0></TD>
+    <TD><IMG height=3D2=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD colSpan=3D31><IMG height=3D43=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_103.gif"=20
+      width=3D796 border=3D0></TD>
+    <TD><IMG height=3D43=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR>
+  <TR>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D87 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D46 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D43 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D45 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D28 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D42 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D10 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D18 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D33 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D55 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D10 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D7 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D26 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D9 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D8 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D40 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D8 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D27 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D23 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D27 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D5 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D10 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D37 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D38 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D10 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D8 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D23 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D8 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D6 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D58 border=3D0></TD>
+    <TD><IMG height=3D1=20
+      =
+src=3D"file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_Arquitectu=
+raGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif"=20
+      width=3D1 border=3D0></TD></TR></TBODY></TABLE><!-- Cargador de =
+Programas -->
+<TABLE cellSpacing=3D20 width=3D"100%" border=3D0>
+  <TBODY>
+  <TR>
+    <TD bgColor=3D#f0ebff>
+      <TABLE width=3D"100%" bgColor=3Dpurple border=3D0>
+        <TBODY>
+        <TR>
+          <TD class=3Dapartado align=3Dmiddle>Cargador de=20
+      Programas</TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=3D20 width=3D"100%" border=3D0>
+        <TBODY>
+        <TR>
+          <TD>Aqu=ED puedes escribir un programa en lenguaje ensamblador =
+para=20
+            porbar la m=E1quina.<BR>Las 4 primeras palabras de la =
+memoria (m0 a=20
+            m3) se han reservado para los datos, por lo tanto, las =
+instrucciones=20
+            se almacenar=E1n a partir de la direcci=F3n m4 y el contador =
+de programa=20
+            apuntar=E1 inicialmente a m4. <BR><BR>
+            <TABLE cellSpacing=3D0 cellPadding=3D0 bgColor=3Dblack =
+border=3D0>
+              <TBODY>
+              <TR>
+                <TD align=3Dmiddle>
+                  <TABLE cellSpacing=3D0 cellPadding=3D5 width=3D"100%" =
+bgColor=3Dnavy=20
+                  border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD=20
+                      style=3D"FONT-WEIGHT: bold; FONT-SIZE: 12pt; =
+COLOR: white"=20
+                      =
+align=3Dmiddle>Datos</TD></TR></TBODY></TABLE></TD>
+                <TD align=3Dmiddle>
+                  <TABLE cellSpacing=3D0 cellPadding=3D5 width=3D"100%" =
+bgColor=3Dnavy=20
+                  border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD=20
+                      style=3D"FONT-WEIGHT: bold; FONT-SIZE: 12pt; =
+COLOR: white"=20
+                      align=3Dmiddle>Valor que se=20
+                almacenar=E1</TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD>
+                  <TABLE cellSpacing=3D0 cellPadding=3D0 =
+bgColor=3D#c4c4d5 border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD>m0:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp0></TD></TR>
+                    <TR>
+                      <TD>m1:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp1></TD></TR>
+                    <TR>
+                      <TD>m2:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp2></TD></TR>
+                    <TR>
+                      <TD>m3:</TD>
+                      <TD><INPUT class=3Dreg =
+name=3Dp3></TD></TR></TBODY></TABLE></TD>
+                <TD>
+                  <TABLE cellSpacing=3D0 cellPadding=3D0 =
+bgColor=3D#c4c4d5 border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D30 =
+name=3Dv0></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D30 =
+name=3Dv1></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D30 =
+name=3Dv2></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D30=20
+                    =
+name=3Dv3></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR>
+            <TABLE cellSpacing=3D0 cellPadding=3D0 bgColor=3Dblack =
+border=3D0>
+              <TBODY>
+              <TR>
+                <TD align=3Dmiddle>
+                  <TABLE cellSpacing=3D0 cellPadding=3D5 width=3D"100%" =
+bgColor=3Dgreen=20
+                  border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD=20
+                      style=3D"FONT-WEIGHT: bold; FONT-SIZE: 12pt; =
+COLOR: white"=20
+                      =
+align=3Dmiddle>Instrucciones</TD></TR></TBODY></TABLE></TD>
+                <TD>
+                  <TABLE cellSpacing=3D0 cellPadding=3D5 width=3D"100%" =
+bgColor=3Dgreen=20
+                  border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD=20
+                      style=3D"FONT-WEIGHT: bold; FONT-SIZE: 12pt; =
+COLOR: white"=20
+                      =
+align=3Dmiddle>Comprobaci=F3n</TD></TR></TBODY></TABLE></TD></TR>
+              <TR>
+                <TD>
+                  <TABLE cellSpacing=3D0 cellPadding=3D0 =
+bgColor=3D#c4d5c4 border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD>m4:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp4></TD></TR>
+                    <TR>
+                      <TD>m5:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp5></TD></TR>
+                    <TR>
+                      <TD>m6:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp6></TD></TR>
+                    <TR>
+                      <TD>m7:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp7></TD></TR>
+                    <TR>
+                      <TD>m8:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp8></TD></TR>
+                    <TR>
+                      <TD>m9:</TD>
+                      <TD><INPUT class=3Dreg name=3Dp9></TD></TR>
+                    <TR>
+                      <TD>mA:</TD>
+                      <TD><INPUT class=3Dreg name=3DpA></TD></TR>
+                    <TR>
+                      <TD>mB:</TD>
+                      <TD><INPUT class=3Dreg name=3DpB></TD></TR>
+                    <TR>
+                      <TD>mC:</TD>
+                      <TD><INPUT class=3Dreg name=3DpC></TD></TR>
+                    <TR>
+                      <TD>mD:</TD>
+                      <TD><INPUT class=3Dreg name=3DpD></TD></TR>
+                    <TR>
+                      <TD>mE:</TD>
+                      <TD><INPUT class=3Dreg name=3DpE></TD></TR>
+                    <TR>
+                      <TD>mF:</TD>
+                      <TD><INPUT class=3Dreg =
+name=3DpF></TD></TR></TBODY></TABLE></TD>
+                <TD>
+                  <TABLE cellSpacing=3D0 cellPadding=3D0 =
+bgColor=3D#c4d5c4 border=3D0>
+                    <TBODY>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De4></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De5></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De6></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De7></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De8></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3De9></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3DeA></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3DeB></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3DeC></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3DeD></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50 =
+name=3DeE></TD></TR>
+                    <TR>
+                      <TD>&nbsp;</TD>
+                      <TD><INPUT class=3Dreg readOnly size=3D50=20
+                    =
+name=3DeF></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><BR><BR><IN=
+PUT onclick=3Dcargar() type=3Dbutton value=3D"Cargar Programa">=20
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE><!-- =
+Descripci=F3n -->
+<TABLE cellSpacing=3D20 width=3D"100%" border=3D0>
+  <TBODY>
+  <TR>
+    <TD bgColor=3D#eff3ff>
+      <TABLE width=3D"100%" bgColor=3Dnavy border=3D0>
+        <TBODY>
+        <TR>
+          <TD class=3Dapartado align=3Dmiddle>Descripci=F3n del=20
+        Computador</TD></TR></TBODY></TABLE>
+      <TABLE cellSpacing=3D20 width=3D"100%" border=3D0>
+        <TBODY>
+        <TR>
+          <TD>Este computador de ejemplo tiene las siguientes =
+caracter=EDsticas:=20
+            <BR><BR>- La memoria tiene un tama=F1o de 16 palabras de 8 =
+bits cada=20
+            una.<BR>- Dispone de cuatro registros de prop=F3sito =
+general, llamados=20
+            r0, r1, r2 y r3.<BR>- Un registro de intercambio con memoria =
+(RIM)=20
+            de 8 bits.<BR>- Un registro de direcci=F3n de memoria (RDM) =
+de 4=20
+            bits.<BR>- Un registro contador de programa (CP) de 4 =
+bits.<BR>- Un=20
+            registro de instrucci=F3n (RI) de 8 bits.<BR>- Una ALU que =
+opera con=20
+            n=FAmeros (con signo) de 8 bits, usando representaci=F3n en =
+Complemento=20
+            a 2.<BR>- Una palabra de estado con tres indicadores (OF, SF =
+y=20
+            ZF).<BR><BR>El repertorio de instrucciones es el =
+siguiente:<BR><BR>
+            <TABLE borderColor=3Dsilver cellSpacing=3D0 cellPadding=3D5 =
+align=3Dcenter=20
+            border=3D1>
+              <TBODY>
+              <TR>
+                <TD><B>Instrucci=F3n</B></TD>
+                <TD><B>Descripci=F3n</B></TD>
+                <TD><B>Efectos</B></TD></TR>
+              <TR>
+                <TD>CAR mem</TD>
+                <TD>Cargar desde memoria</TD>
+                <TD>r0 &lt;- M(mem)</TD></TR>
+              <TR>
+                <TD>ALM mem</TD>
+                <TD>Almacenar en memoria</TD>
+                <TD>M(mem) &lt;- r0</TD></TR>
+              <TR>
+                <TD>SAL mem</TD>
+                <TD>Salto incondicional</TD>
+                <TD>CP &lt;- mem</TD></TR>
+              <TR>
+                <TD>SIG mem</TD>
+                <TD>Salto si igual<BR>Se utiliza despu=E9s de CMP</TD>
+                <TD>Si ZF =3D 0 entonces CP &lt;- mem</TD></TR>
+              <TR>
+                <TD>SMA mem</TD>
+                <TD>Salto si mayor<BR>Se utiliza despu=E9s de CMP</TD>
+                <TD>Si ZF =3D 0 y SF =3D 0 entonces CP &lt;- =
+mem</TD></TR>
+              <TR>
+                <TD>SME mem</TD>
+                <TD>Salto si menor<BR>Se utiliza despu=E9s de CMP</TD>
+                <TD>Si OF !=3D SF entonces CP &lt;- mem</TD></TR>
+              <TR>
+                <TD>COP Ra, Rb</TD>
+                <TD>Copiar Ra, Rb</TD>
+                <TD>Rb &lt;- Ra<BR>Flags &lt;- f(Rb)</TD></TR>
+              <TR>
+                <TD>SUM Ra, Rb</TD>
+                <TD>Sumar Ra y Rb</TD>
+                <TD>r0 &lt;- Ra + Rb<BR>Flags &lt;- f(r0)</TD></TR>
+              <TR>
+                <TD>RES Ra, Rb</TD>
+                <TD>Restar Ra y Rb</TD>
+                <TD>r0 &lt;- Ra - Rb<BR>Flags &lt;- f(r0)</TD></TR>
+              <TR>
+                <TD>MUL Ra, Rb</TD>
+                <TD>Multiplicar Ra y Rb</TD>
+                <TD>r0 &lt;- Ra * Rb<BR>Flags &lt;- f(r0)</TD></TR>
+              <TR>
+                <TD>DIV Ra, Rb</TD>
+                <TD>Dividir Ra y Rb</TD>
+                <TD>r0 &lt;- Ra / Rb<BR>Flags &lt;- f(r0)</TD></TR>
+              <TR>
+                <TD>CMP Ra, Rb</TD>
+                <TD>Comparar Ra y Rb</TD>
+                <TD>Flags &lt;- f(Ra - Rb)</TD></TR>
+              <TR>
+                <TD>NOP</TD>
+                <TD>No operar</TD>
+                =
+<TD>Ninguno</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>=
+</TBODY></TABLE></BODY></HTML>
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_1.gif
+
+R0lGODlhHAMaAMQcAP///8fHx7+/v+/v74+Pj0BAQAAAADg4ODAwMIeHh+fn5yAgIHBwcM/Pz3h4
+eH9/f/f391hYWEhISKenp1BQUK+vr9/f3xAQEJ+fn2BgYDAw/wAA/////wAAAAAAAAAAACH5BAHo
+AxwALAAAAAAcAxoAAAX/ICCOZGmeaKqubHsGQizPdG3feK7vfO//wKBwSCwaj8ikcslsOp/QaNRF
+rVqv2Kx2OyAUDIeCeEwum8/otHrNbrvf8Lh8Tq/b7/i8fs/v+/+AgYKCBggJCluJiouMjSoECwwC
+jpSVlpeYmZqbnJ2en6ChoqNZDQ4LDxCkq6xUEBEMA62ztLW2t7i5uru8txAPErK9w5YQBRPEycrL
+zM3Oz9C5AgXC0dYnFBXX29zd3t/g4Z0BBarizg4J5+vs7e7v8LoTEfG9Cgvm9fpUBv0j/QY0+WMB
+ECCKgfwCWkFYQiEAhga3MGzosNLEFAX/VRRx0cTGfSBXIGgQ8hYDAiVT/x5EGBFTR48OO77E+JFg
+zYEtFc5sMXNnIp8cdQqF+W+lyqMlKlBA2mqBBaZIM2acxbKmJ5lBcVq90nOrIqAPh4ZV0RMqUggX
+8pn91ADBWpVSc8oNGxCiXH9VL1bNWneoXa1Bx2rcS5Gj4J14K049PDevUMcnEg/+CHjs3qmYvb51
+l23zp3meQ+J9yDgw3dOVKx/WWNg0YYOp+2Zd7Zqy4scyJZOuvZuxbMG9dU9MLFbv3dLIdYfWl245
+JwIMnOsb/Ts27+Qxbw8vmJ019taq6YolYfc6+fHiTaf/fp64UfberWO/Lb0e9PqZHjzAD4+674jy
+yQeccuqdF19xGwkonP9tBiLX4GUIsleeVsbVtth1AWYXHn/rYJABh5boB2I77m0oYYQYJnhTd/Cl
+6GJrLz6I4oIxhtdSjESdWCBqmo14jYc+OiJikOKUOOOR5gm4o3oZBkahjjC2OFuTsVXHIo0GAoje
+fFASSKQ3QH6pyJBieoMTk3M5uBhh4qkY2ZXjZeakdiaWx9ebwLVpIWBs6rleYZDBBKF3/y1ZpjVh
+HpoFmYo2OgpYZGUBKUg9OppMopZSwWimnApUKVmfRmnWpJ3mgmmpKmyK6qqMkHoQFq7GEyqrtpxK
+awmq3qrrrryqZCuvufYq7LDEhvPrrsEWq+yyzF76YbHJXqLBBtRWa+1ltdhmq+223Hbr7bfghqvB
+JtOGa+656KarLrjjkrvuu/DGK++17WpS7rz45quvtvWacKyu0VqygZgDa1IwkQdnkrCPC1/SMIgP
+i/DvrQFXEjF/FzeScX0bM9Kxcx8rEnJoF0/MSggAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/space.gif
+
+R0lGODlhAQABAIAAAP///wAAACH5BAHoAwAALAAAAAABAAEAAAICRAEAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_2.gif
+
+R0lGODlhhQAWAKIFAP///39/fwAA/wCAAAAAAP///wAAAAAAACH5BAHoAwUALAAAAACFABYAAAOq
+CLrc/jDKSWMINWehu/8gc4UkR57oOaadyb6whcWUS9/wikP27oe6H6MnLFaCqIFyICEanxAkSamg
+8qBYiTRktT6c2ewWQiAAyuZylQnwOsBh6PiBPqvVXfY3zlfMHWp2Cnhsbg1wfUJ/DYGNZnkRiIk+
+iwyOg4+Fem+TYZULl4KQV51Yn5iogm1LTaWmM1CSrjGnMLKzL7Uvt7gpuiy8vSqwT8HCQMRGJgkA
+Ow==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_4.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANr
+CBDa/jDK5di8+Fm1s5dd941NSJ5lhaLm+gjC1LoNLKu0AscgPg0DADAIdOxuqctQWCwCYrZe8hdk
+KpxQXmQmcXqDvOjW161+nzuxhhw5W2taCLdtrhvj62kOM99LOX4ZfYF5gIRIhodjAAkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_6.gif
+
+R0lGODlhKwAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAArABYAAANq
+CBDa/jBKxVqdOL+7tNcc941OSJ5liqLm2giwgLUurNgSveJ4pEeDASAoDN5kgB7kByEOjcZkbKaa
+RK9CHtJXlWAVRu2E+fg+pcdxFyg8n8W5dbNtjm25FteJrFfn+x98gEtyg3gUhiAKCQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_8.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANo
+CBDa/jBKxei8ONaVe96bJz7gaDrleaaqI7yv1oRtrNjo3Db4xEqDASAoDPIEH92FODQaAT3JL/Ks
+CqFIzBRiVTyjMsvy2sUmxZPy03zL5tBAstwFc785O9E271Pyz3h/Wn6CfXCFMgkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_10.gif
+
+R0lGODlhSAAWAKIEAP///wAA/5+fn2BgYP///wAAAAAAAAAAACH5BAHoAwQALAAAAABIABYAAANX
+CBraLsPJSau9mFWIu/+XRnFgaWYWea4sIE5qK3+vFM+4VT9R7le7xu1HDCqGRJ8RgEzilk2nDNqT
+/qjWYqqafW67yi/Yu+GOWdjzVKxGs9unNDz+nncSADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_11.gif
+
+R0lGODlhHAMEAKIGAP///39/fwAA/5+fn2BgYAMD/////wAAACH5BAHoAwYALAAAAAAcAwQAAAOJ
+CLrc/jDKSWMINWehu/9gqHHiVp5oqpJqxLZwLC/vrNR2rnf4MhC7oDB4GdKMyGQvtkw6mcLmc4qS
+tqzU7Kf503q/RWRBQC6bz+i0es1uu9/weCE4jtvv+LwePqfv/4CBgmd9O3WDiImKaoUOXV+QU2FG
+WJGWDZUnmZeXmyWenJCgIaOhWlxApgkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_12.gif
+
+R0lGODlhhQAWALMPAP///39/fwAA/wCAAMgAAAAAAPjf3+N/f88gIOqfn5pPT78QENZAQPG/v91g
+YP///yH5BAHoAw8ALAAAAACFABYAAAT/EMhJq704681zCF0YCmJpnij1pSzJvvC7xqVL37gH5pzN
+/7gZEOMbGlPCI6WobHaStMFAw3RaMVCYdJqpXr+TLGvLJYIzBEBaKcYUCoA3/D2ZSqlNgn59SfMr
+foBIOx1ycXR0dWUXXjh/fyJ+fHqDIomXcIp4R5ASe56foGuSE5RqpmqnqGGEHJgSiRJ3XXmPpame
+uKmBvLqjgboSbRevhxSzZk6me5STor3QzLm4kMMWxbEAyIxfwLe5ztC7FqPTrJaZxbKLFo03tuG3
+v+PUvtPlBudf7u+hqubzetX7dy/XAQQJAFgDwu/MkAN6ECho5aShwx8Q9yxIeMWiBgZ7JxpIAKlH
+JACSBEyiVBlyZMuTL1e6LAkgIzME+SpeBGNTj4OcOgFEAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_14.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANo
+CBDa/jDK5di8+Fm1s5dd941NSJ5lhaLm2ggwDKquIl+te+P0NAyAH/BniwkmOYkwSCTedpqeEshU
+EB1QqQhy7VJfx0gy4rV+i7PUpVx9hiFjLpVtREprmDg+zdl79H5RaoF2g4RiCgkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_16.gif
+
+R0lGODlhKwAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAArABYAAANt
+CBDa/jBKxVqdOL+7tNcc941OSJ5liqLm2giwgLUurNgSveJ4pEeDASAoDN5kgB7kByEOjUYe0qea
+GJ+Ka0y5qUquYKGD6xU1xeEH2eIFot9J5JTKxqSx8Tmd4jox+zNtgIF1gyCChnsdiRkVCQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_18.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANs
+CBDa/jBKxei8ONaVe96bJz7gaDrleaaqIrzvxLYxUEOzet9oE0aDASAoDDZ2Ao0PQxwajbakS0pa
+XqBYYfRI7Vmu2uyUq/xOxM6xumqWoKE1npcDVqBh8vmv9bHyPTl/F4GCEoSFOH6IMgAJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_20.gif
+
+R0lGODlhSAAWAKIEAP///wAA/5+fn2BgYP///wAAAAAAAAAAACH5BAHoAwQALAAAAABIABYAAANX
+CBraLsPJSau9mFWIu/+XRnFgaWYWea4sIE5qK3+vFM+4VT9R7le7xu1HDCqGRJ8RgEzilk2nDNqT
+/qjWYqqafW67yi/Yu+GOWdjzVKxGs9unNDz+nncSADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_21.gif
+
+R0lGODlhHAMFALMNAP///8gAAON/f60wMIhvbwAA/5+fn2BgYN1gYPjf339/f/G/vwMD/////wAA
+AAAAACH5BAHoAw0ALAAAAAAcAwUAAAS3EMhJKw026827F0E4EF5pSsWprmzrnulrxnJt3zaNa/ru
+/0BU0NIbGo+q4sRwQDormOcNhEgoFNKJMss9bn3frhj8DI/PNTNOjW6vvkz3LyovLRKSa5dR6Pv/
+gIGCg4SFhoeIiYoMTnyKj5CRkpOJjI2UmJmam4CWSI6coaKjg54WcXU4dKkmelxsrLEUsDK0srG2
+L7m3dbstvrxtcE3BxUCuWcDGYsowy88Azc7QxtIz1NUbqLwRADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_22.gif
+
+R0lGODlhhQAWAKIGAP///39/fwAA/8gAAACAAAAAAP///wAAACH5BAHoAwYALAAAAACFABYAAAO3
+CLrc/jDKSWMINWehu/8gc4UkFw5kqgLj2pkg6s5aS1PwJ988ZPeQnGcHLLIwxocwyawhXYQoQbJs
+WiW/VFSxDV6/lCx06j2BaeJIoQBYs9eOrpJEPKfSEHcbDl/I52Z2K3gPfYZsXH8OVRl1giCEDocK
+fQCKi4+ZkQ2Te4k4mY+bDJ1wl4ChZ6MLpWxSUhGMFY6pGas3shS0tWFPV7kTu7xYvlbAEsLDPsVN
+x8oztzTOz4PMTCYJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_24.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANq
+CBDa/jDK5di8+Fm1s5dd941NSJ5lhaLm6gjw1LqAoMTRvOKXHg0DADAIvNkwPshQWCzCnjLVpchU
+OI88jXRC7QZx2S1lGqxWwUdI8uG1frFpbYrsrtegIDENqd9H5358gIF/HISChod/CQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_26.gif
+
+R0lGODlhKwAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAArABYAAANv
+CBDa/jBKxVqdOL+7tNcc941OSJ5liqLm+gjw1LoNLMgqDcRxNEuDASAoDDp4N18OaCQOhQqk5Bcx
+PhXW3i65WVah1ixXuxRBwmCoba20ZNBYIXkLoZ7TcfqR6+7rPHZ/U16Cg36FOIeIbRSLGBUJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_28.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANk
+CBDa/jBKxei8ONaVe96bJz7gaDrleaaqIrywxLbv14Rqjc3RMAC+n6+hu/AgQeBwCIDFNDcMc/pr
+CmyWC1XBLE6Oj63Sdd1FtVWxV3aeiLvOMgTcMrbrHToemt1jOX5/OIFQCQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_30.gif
+
+R0lGODlhSAAWAKIEAP///wAA/5+fn2BgYP///wAAAAAAAAAAACH5BAHoAwQALAAAAABIABYAAANX
+CBraLsPJSau9mFWIu/+XRnFgaWYWea4sIE5qK3+vFM+4VT9R7le7xu1HDCqGRJ8RgEzilk2nDNqT
+/qjWYqqafW67yi/Yu+GOWdjzVKxGs9unNDz+nncSADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_31.gif
+
+R0lGODlhHAMEAKIHAP///39/fwAA/5+fn2BgYMgAAAMD/////yH5BAHoAwcALAAAAAAcAwQAAAOP
+CLrc/jDKSWMINWehu/9gqHHiVp5oqpJqxLZwLC/vrNR2rnf4MhC7YKMglF2KNKRy2Ys1l1Cn8Bmt
+oqgtrHX7ef64MSL4c1QaBOi0es1uu9/wuHxOrxuC57p+z+/76Xd4f4OEhYZrgTt5h4yNjm6JDl9j
+KmKUGmVIWpecDZsnn52doSWkopSmIamnXF5ArAkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_32.gif
+
+R0lGODlhhQAWALMIAP///8gAAH9/fwAA/wCAAAAAAJ+fn2BgYP///wAAAAAAAAAAAAAAAAAAAAAA
+AAAAACH5BAHoAwgALAAAAACFABYAAATFEMhJKw026827p4LwjeNAnmiqguK6mm4sx+GMwnaub/Xu
+4SmMb5jpETVAlPDINDIrydPyOXTKCFgCJ0qaUndWF1YyRn7Pp/CsnOGi3xW1plAA0Ot0C9vihvvl
+GXd2eXlke3wuXn4ugBaFj3UUhxR9HoqLKo0VkBKFE5MTlR2XmCiaFJyDFaASohykpSSnE6l5ZawA
+rrFHs52RqVlaG7q7VS1vxMVgx2jJFrDKHL06zhXQ0RrTOdUX2KbMZ9wT194VBgd+MBEAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_34.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANj
+CBDa/jDK5di8+Fm1s5dd941NSJ5lhaLmqghwDKruA89p3dw4hw0DADAItAkmrclQWCy+jkiaMshU
+OAG8HuXi7FKxUK0I4rVSs+IftQzGJCVsJzry1l3q9nTeLd3r/X+AEBYJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_36.gif
+
+R0lGODlhKwAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAArABYAAANr
+CBDa/jBKxVqdOL+7tNcc941OSJ5liqLm2ghwLLUuAL9CRLu30m+qyWAAGBKHuCRkFzEWkUhb7Ae0
+ZKJYolRZpVy1WV9OrAtKwk+yutvBoKM/qnUuBNvF05m5BtrzMUx/E4GCZXSFg36IVQkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_38.gif
+
+R0lGODlhKgAWAKIEAP///wAA/wCAAAAAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAqABYAAANk
+CBDa/jBKxei8ONaVe96bJz7gaDrleaaqIrywxLbv14Rqjc3RMAC+n6+hu/AgQeBwCChOjg+m9NeE
+OVE3zFTBvGqyl63SJbBZwlSxFwJ1iLvlHbglatNl87uZo+/Y+1hngEYACQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_40.gif
+
+R0lGODlhSAAWAKIFAP///wAA/5+fn2BgYH9/f////wAAAAAAACH5BAHoAwUALAAAAABIABYAAANZ
+CBraLsPJSau9mFWIu/+XRnFgaWYWea4sIE5qK3+vFM+4VT9R7le7xu1HDCqGRJ8RgEzilk2nDNqT
+/qjWYqqafW67yi/Yu+GOWdjzVKxGs9unNDxuIRDmpQQAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_41.gif
+
+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
+mRANAgA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_42.gif
+
+R0lGODlh3QAWALMNAP///wAAAAAA/8gAAPjf3+N/f88gIOqfn9MwMPG/v9ZAQBkA391gYP///wAA
+AAAAACH5BAHoAw0ALAAAAADdABYAAAT/EIQJqr046827/2AojmSpCWY6BWnrvnAMDLMMora3inTu
+/6WBsKehETHGIbF3rHlwwMwu1Ixar85KFWS8MLXLLQaKlVCo5XR0OwQLLe3a8TsLf8gAgX5v0Vf4
+f346Z1xqhj5vcIpLWV1KjHKRT2NQgpaCeZgcU4ednYmPjW6OWl6lpJMXmJeBfnt4Gpyes2pdpqeL
+oqWRth14qziXroCaF7K0yDlzooxMqLp0RwQnlH3B13nZrLGEH2LJ4EhxdXROb8/mu+UABQYHY5Sv
+1oHamR/HHd/h++EFQu59qtmjZw+FQVhSunnQx6/hLH9DAP6qhK3gsHsK84lAMCRBBQUdij+GBABS
+iEeSI0sOOKmSZcqXJkXGRDmzpcyVN13WhImTZk+bEJUYWCBwICs+2xKycMi0aYegQhgQmKjqIMGK
+xSzgc8qVaVCpfwxt7Uq23wCwAdWMLcKjrFsTCabBU5uRA8Nbb/O2QBhlbYa7ivQKLsEXiF8kbQcr
+DlH4x+HFkKM09vE4smUbk21EAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_44.gif
+
+R0lGODlhpwAWAJEDAP///wAA/wCAAP///yH5BAHoAwMALAAAAACnABYAAAK5BGKpy+0Po5y0AmGz
+RLr7D3ZY+HHkiabWqFZmC8cpK0NvjecUfQm+n/gBg8Mez3HTKZcKXnEIZf2Ix0aSic05paNndyqc
+XLNk2JZo8KbB0zWyDK+d3T10HYPnvuN81TZMV3d3IRgx1oeYMadGB4RXaJMo+TEnyOiIKTa5qbhw
++YXGZsdwyGna5EmD2dYYWLRQenpatRQry0mrZHs7mauzy5vomwMc3DeMU2wch1yjvFzWLPMMnSXd
+UgAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_46.gif
+
+R0lGODlh/QAWALMMAP///wCAAAAAAMgAAPjf3+qfn88gION/fxlwANMwMN1gYPG/v////wAAAAAA
+AAAAACH5BAHoAwwALAAAAAD9ABYAAAT/EIAgq7046827/2AojmRpVoKAqmnWSq8WT6c1AHet73zv
+/5uUEKZyCYvBGIUzaOYyt+cl6nxWbVOgdsvtboeSpUYqDUWxuIp17W2733AMmLYpS5x3fD53Vt/R
+TWp2cYSFhiRzYmNkflZpf1R6j39pZ4OHmJmaAIkfgThXjqCBfYx+laibqquFnSB9p6moopOPlrWs
+ubpArhcElJCNwqCytKJ8u8nKO70SBQYHgp+jwHy3plenyMvc3SC9z03R3uTl3J3hTuPm7O2bcwgG
+VeIABE4GEvZN+PX3+f799v0TGHAAP30GByYseBAgwoYEHyqEuFAiw4kYL2q0yNGhx4gfTyuGhJhA
+RCICCuatc8eypYlLMpTkS0nPpc2bWpqhHLASp8+fiGT6WgC0qNEPzY4qvQnTCBJFS6OybCpHqNSr
+7aheSIq1KzetFrh6HWtzSAQAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_47.gif
+
+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
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_48.gif
+
+R0lGODlh/AESAOZlAP///wAAAMgAAHBw/wAA/+fn5xsdG7fMt73TvT9FP6+vr//h4efn/wgI/21u
+bWt3a5OlkzQ1NCgqKM/PzxAQ/3x9fGFrYYKRgkxNTLe3/39//2dn/5eX/8fH//f39xwdHKu/q9fX
+/0ZH/xYY/0JG/3B7/11l/zM3/xcY/4aG/46OjlZeVi0v/6Gx/+H2/8zf/2t0/zY3/yQlJKW5pe/v
+/9ru/7DA/7a3/15f/42Z//jf3ywtLJmrmSosKq6v/0lO/z0///f3/+N/f88gIOqfn3J7/35//0RF
+RIiXiHF7/w8Q/9ZAQPG/v1tDQtPn/2Rs/4+P/91gYC8yL9/f/x4f/y4xLsfHx+/v77+/v62tvwwM
+v9fX1you/zAw/35/fhQVFDQ4NDE1NCcqJx4eHiMlI////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5
+BAHoA2UALAAAAAD8ARIAAAf/gAABgwCFhoeIAoiLh4qMj5CRkpOUkAMEmAOVm5ydnY6FjgKjAAUG
+Bwipqqusra6vsK0JCp6dBIa3uAC5u4iYvIXAwL21taMCC8nKy8zJg8rPC9HN1NXW19jZycPFhYMB
+m6CT4t3l5pEMDQQNDOfu743HooaKDg+x+Pn6qxAR8JC8fmEKpqsgsWACDw38J+mYtmXTok17SLGi
+xW3wvoXbyLBjt0uaPIrkNI/esVKn9qlcuUrChJEGcwU0iHAhwYMKYSYaZTFiAGc/Lwodao1bN42V
+yEVSqrPpIQYU2jmd2oheKKsAKlhgyVXfBQxOZ94UexMnWZo6HVb0CS2oNLdE/+NSNFoMKdVHDDJo
+2Mu3r9+/gAMLHhx4A+HDiBMf5tDhE1ZRjjx8ANG18iuXYWOWFYYw51i0MNWu/Qb37Te5qOf6EhiQ
+riG7dw+FEDGCRInbuHPr3s27t+/fwIMLH058t4kTKFJwvAqAFCgVKyxLV/XAwdSzMm3iusW54K+7
+olOLH/9wmM2F2hnBjg0gBYsWLuLLn0+/vv37+PPr38+/v//8L8AQQwj/eCDDDNNZdoABBVzHnlPh
+kSfhhMuY11pnkay31HKQ0BADDDX8J+KIJJZo4ok2sHDDPwokkGBl1VHl2oPwREjhjeNZuB2G6XlD
+SFIcPoJDDicWaeSRSP5XA/8LBHajAyI78JAPaamQFgACg6wEQg8NwtQBXwTw1RiNHdmI45lx6chj
+dur9SAlTj8BpiA8/JGnnnXgaaQMQQXQjxBBEGNIiPllieWWhVV6p0goqNJUOa+yQWSZPaFYql4UJ
+YQiJhpDIuYinDLDwQp6klmoqfkUY4ecogBZyBBKxIJroKrLiA8IHHjh1iUAhSfqPmZYGq42a580o
+iJtUaZDEqcw2S2oNSvRZixDyADqBBLF+o4qVhi7aqFOPYhKpr79SKuy55a224y7GcqpTDDY4K++8
+RpKQASNLHMNEIfmOsi+18ggwRBMXEKqtrLXCwsMOd+1KQK/kvgMsuhRXqO7/mpoe4i5MSjhB78cg
++/cEFMUAfEwUOkwgBSoGd7utovnMctej40YssbkV58yMmp2hZ9TGnwZ5SBANhGz00faVoEHJJz9Z
+iD2vFJolwjDHsjB7INlcLjI6d62MsZwAnYjQhkxBBdJoI6100JNQizIiprDcCpWGHsztK1VYQckV
+WPTt99+ABy54FlpkIfjhiGOxhdbN4ex1zmBvInZVQD5idn5csKb55px37vnnoIcu+uied5Hf2mNP
+woTTi0D94itfVeLFF2DUbvvtuOeuexi69+47GGKMwfjEjwcbeSWTY/UmJJfjdzzj0O9y+tKpdyMZ
+Za+3glnAzBlyBRnYZ58gCqPDO148us9LEggAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_50.gif
+
+R0lGODlhLwAVAKIEAP///wAA///h4QCAAP///wAAAAAAAAAAACH5BAHoAwQALAAAAAAvABUAAAN+
+CBrS3FAMRau9GD+x48xgeG0d9IkoSEZm6mpQ2ZzVYNvKfbsrK1243CQIIIZ6LFpRKaQYVTHfr8Zc
+Oj/PCtJjyVqbX5hDqvTqvGIOuVtFH6O+crsq2rbY1zAVOo5jzmB4GXYzL4YUhFOHL4l0i4NwSY+M
+kVyTKY2XmJV3mhgJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_52.gif
+
+R0lGODlhQAAVAKIFAP///wCAAP/h4cgAAAAAAP///wAAAAAAACH5BAHoAwUALAAAAABAABUAAAOS
+CBDS/mJIRau9OGfCKYOQNGgkNpYVR3hgOJEnGqOAyraOWM4wTdmKDy7y0vCMPgVwMWzoesnkUoh7
+Rq+bTrBJPGK/U671W/Fqws2xyWfOrrbpYqZtoV/QQ/XFTuGntExxdn5YeFVyZGCAVC16iVGGjYiJ
+hEqLYpN1bJCXgjubUp15mWWgPpEgjqWPbjejlawWNgkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_53.gif
+
+R0lGODlhVwAWAKIHAP///wAAAN/f/x4f/+H2/wAA/8gAAP///yH5BAHoAwcALAAAAABXABYAAAPX
+CLHQ/jDKCcUgOOtCu1+BJ47VpZ0cqYJq21kn6o4saaj3BMdZOne1UU5I2fEIvt8kKBo2i6ZjElCo
+Wh3WqYTpcXahR8y0iuWQqVoIV9ky8sY+8vlMWbNJ7hi8jG7M03Z3InkyD3RyKX9bDDY4YGFwWX6J
+aQ+BEl4dmQ6EGxCKfaF1jESNOlFvn3FmlB+kT6YSnT2qfKB0lq+CeKh6tbZXk4shu229hcUOl8kR
+s2LMyrqajqdhSNANyxCbE9wAztfY2g/eEd7glXfjDuXbj1LYCtLxJdbpSgkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_55.gif
+
+R0lGODlhTAEDAMQcAP///wAA/+H2/3B7/39//8gAAI6OjlZeVr3TvX2LfVRVVKW5pSQlJPf39//h
+4RwdHKu/q7fMtxsdG+fn5z9FP6+vr56enktSS2t3a21ubZmrmSwtLP///wAAAAAAAAAAACH5BAHo
+AxwALAAAAABMAQMAAAWIIAAEQmmeAyGuQMG+cCwaB2LfeK7veKKIrpUryKLxjsik0rZgNGTQqHQK
+LBQc2Kx2y+16v+CweKwNUM+jk1qQQrsbD8hyfotIJkDWsEWEy+mAgTYUFW6Gh1VXZIuMjY5kZogy
+JGsmbZJSFheCShgZQlZWVXkimpynSRobmKxSoY+wsbJjka0AIQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_56.gif
+
+R0lGODlhbAIFANUtAP///wAA/+H2/3B7/39//ywtLJmrmb3TvbfMtxsdG+fn58gAAD9FP6+vr//h
+4QCAAAAAAFxlXIWFhYiXiERFRCwuLDQ4NBQVsx0eHff39ygqKM/Pz9MqKhAQ/xCIEAAwnwB4EA14
+ABCGDr+/v9/f34KRgkxNTPfa4jAq+f3a2i8yL49+7ud+fv///wAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAy0ALAAAAABsAgUAAAb/QAAg
+ICgajwOCcMlsOp/OguFArVqv2CwioVguhF+wlynNms/otJXRgLrf8DhzQXfY7/i8fs/v+/+AgXgB
+coWGh4iJik8Bd416D4uSk5SVbw9/dGGWhxCeS0RHoklOm5QNDGqqVRESc2MAm6aoq7W2VRMUnLtg
+dYK/wMHCgoS8xsfIjw7KeJHIz9CUmH6anKZxnhCgoqNKTdeTFRbj5OXlF+bp4xgZr2KxYddlt/Rp
+GhvRkpp/HJr+/wADChxIsOACDsI6BFjIsKHDhxAjSpxIsaLFixc7ONrj4YHHDx5DihxJsqTJkyhH
+gkAZIqXLlydFZKIDBxwUm26ybeNmhNS3fV0KRggdSpRogKJIhZL4OeYLzSYbNNSbmqWEiXz6fPXB
+iXXRgmFgwwpjJrYssT9kzarFcwLFCT4pOKRYS/dOtTdcmRbSKSQUTwE+3XUF1dVECaqIDyBQgW8w
+on3UHFv6Wrcy2LSW6WIelJnuigAr+LBYwKKz2btu8gqWozMIADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_57.gif
+
+R0lGODlh+AAOANUvAP///wAA/+H2/3B7/39//8/PzygqKL3TvWt3a21ubcgAAP/h4fjf31xdXHeE
+dwAAALfMtxsdG+fn5+N/f88gIOqfn6u/qxwdHPf39yMkI7HGsVZeVo6OjtMwMPG/v9ZAQN1gYEtS
+S56enpmrmSwtLDM1Mz9FP6+vr+NwcLe3tzo+OoKRgkxNTHF+cWVmZf///wAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAy8ALAAAAAD4AA4AAAb/QAAg
+ICgajwOCcMlsOp/QaDMgrVqZBcNhy+16v+BwGJG4ms9nhXrBbrsXCrSVeKwn5XgzNV9lOBsOYlwP
+hA9bhYQHiYJeEBESfJFoagpvlnGSU3V2SpmeQ59OExQVTBIREIKLiYuHhoxdZKGzTZSWb5ihdJtF
+d7W0esBCE2qkSwkIqq+Dy4rNjBYXGMK0trdtuZ+7vL5M2dRPe8DElMYSGRpiiMyFzrBcGxzgs9bX
+cLWUanLbm91L31E6KPAg5AMlggAMqkGocGDBgw8XRnSYEGJFieTyUWDAYQOjda3cvYs2bd6nete+
+6ROyUg8vI/5YmgEYSRytjGpA+MFwwQIs61bNQgoKIcJkKJS3VOZqeYUfp0g0+diclVEnk45hVhkK
+KTTMCBJGj66xd8/b0rMtmTpF0ilslamhiFltgqHEiKztnLVD1JWLiRNuPSG9hO8fprMss62F2TYw
+FLifPPiBcsLEu8tgvjrONBgXvnyfoy7u1VjmZlCnAZC4i7n1AQMF3GacMIwSbQCza+dTgIISCja9
+KRUGwFQfUyajBcQkPnMW5LApVLjGvIJFaqhj7Sk1nLh7uJeknUQV7/w6ABYrpr+DbT5PZzfbva+c
+rxi88tLMr4zH8zxsFvWMtOCCY7dJ8h42w8kHGnGYBAEAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_59.gif
+
+R0lGODlhUAEVANU/AP///8gAAP/h4QAA//fa4hgV/P3a2s0VFQAAAI9+7ud+fsew6H9w8OfM5AgH
+/te+5va+vuNwcN/F5XBj8p+M7CAc+68AIDAq+WBV9BAO/ffa2od3d39wcGdbizAqKnBiV2BNBX9m
+AHBaA1BFN//MAL+p6aeTj1hIDnhhDYd2bNe+vjAoEPfGAEA0Dr+pqe/T0zgvHdesAOe5ADgvF9/F
+xa+NBcefAEA3J49+dnBbDI9zCGBODZ+MiOfMzDAoFf///yH5BAHoAz8ALAAAAABQARUAAAb/QAAg
+ICgaj8ikcslsOp+Dp3RKZUab16p2eyQUBgVC0nAIHAzcdDXAFrrfwgB8Tq/DEXg3Uc3vO7N+gX+D
+goVGCQOJCUkKbAEKhoWOdpSVlgB4CHqRnFyAnYafSaKgW16JYGJGZI5npWqTl7KzmZuvt0ukuGm6
+Rr27TYioA4tGjY6PwGtts5RytHlxyrcLDNYD1gwL056E3E+nw2FFrMiu302xds+W7Je10uicDQ7D
+Aw4N8lS/AvzyD9mwWXtQBEKEgwgjQNC3RF0dd86awRuiRAJDNRPsTbgohZ+/ix85KnFIB+I6idEo
+HqFQgYHILfRQ4XuJxRtNJCFvFiE5x2Qz/zsT9whgmcilzikZE208Osom019Cj/L8SVVI0KEVhhll
+6iTmTK5HPIItAhXs1Ko/J1rIam/AhbFNMi6F28/p0bJcz1L1CTRlAAkY7DHIqbNBhnx069Yci5ep
+3jiy+Na5KgAwqsFbNGzgwLmz58+gQ4se7bkD6dOoU3feoAGK3SUeMsmeTbu2bQ+LEyN5PCQySk3x
+iljGrOUDiBDIkytfzry58+fQo0uf7lzECNe5nSAgwb279+/gw39HkJ0Pkai3eEuGs34O5SMSShAW
+YOKE+Pv48+vfz7//fRQpvBbWFNv55x95VjyBDBPnNWSEIw9CqIV6aFXyHk5VqLACCwZ26PLhhyCG
+14IL5TUlRYEh3odgLulEhd4UewgV44MTMlMhWhcOOMULMMSQ4o9ABvmdDDPQkGCJS6AoZHcrKgHV
+iwJIuOBObOwU5Ug0LtPejZTk6AsVI9Sw5JhkdmjDDa05KWASSo7ZpIkOVpnllTJeaWWDSdSpJZd6
+/GYLnE7gkEOZhBaanw4fsIikEm0u+SaGDEZIJYR6LojnbhLuGdElW77hJVlSuNCCoaSW6t0OPKi5
+KJse4qHfozrCaOeclzYIJZQw2viQb9AApxKgS/TggwymFmsoCyuoAOyyFrFqYCavrmoljXVWS6Wd
+lcKia0m8ylJLEAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_60.gif
+
+R0lGODlhqAEFAMQbAP///wAAAN/f/x4f/+H2/wAA/3B7/39//8gAAExNTIKRgr3TvbfMtxsdG+fn
+5//h4Wt3a21ubQMD/ycqJzQ4NBQVsxwdHPf397+/v9/f3+N/f////wAAAAAAAAAAAAAAACH5BAHo
+AxsALAAAAACoAQUAAAXeIBCMQGmeaKquqDAQcCwXbG3feK7vvFnIQILh0DMhiisacmlKKBbQqHRK
+rTIaDibvqEV4H+Cw+MHVlkYBM88VnKnf8Hju14YN5UglHudoMKqAgVEQEXssZUteCGOMiFpoOo41
+kiZsdQQSBZqbnJ2en6ChoqOkpaanEpdCRIY7eq01ERMUtLW2tRW3urQWWbAolFtfjGLBRZA5xinG
+lnWvv9DRSap3wNInz9clFxjd3t/fBeDj3RnaABpmisTFcMg4ytYrzW3Z5/d7dHXVJ/FGcPbw2Qgo
+MM46dmD85QgBADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_61.gif
+
+R0lGODlhVwAWAKIHAP///wAAAMgAAN/f/x4f/+H2/wAA/////yH5BAHoAwcALAAAAABXABYAAAPU
+CLHQ/lDA+SQFg5TNu7lg6CyBaJ5Q1q3Fh77kK4cqy7mzGOe8U9utXmh3shRBPxuuYWg6IU0T0WSk
+IjXA4CPKxD11DFRVNH4kWUsAV+1ypilT8qvswwLTa+4n/1aEhTlnK3heS3xwf4Aygh5QboRSiYoo
+jDeOXZdgJWJzV1laDoehfRBxIXQXqBh2SplsW4WIm0ecF5UbkKO6mBOmIKoTqregkyOSxSLDpIC+
+yLasaM7Gs9I00IPVftRytRTK2c0UwBGeWctC4cGdz5/nPenk3RPf0gkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_63.gif
+
+R0lGODlh+AACALMIAP///wAA/+H2/3B7/39//8gAAP/h4eN/f////wAAAAAAAAAAAAAAAAAAAAAA
+AAAAACH5BAHoAwgALAAAAAD4AAIAAAQ3EIAgqr2DyA0K/58HjuQXlGiqruDJvnAcF7Rh37ghyiR1
+/RnQLjXkcVzGpAypbI4OTlohRy0mIwA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_64.gif
+
+R0lGODlhbAIJANU8AP///wAA/+H2/3B7/39//8gAAP/h4ffa2kA3J8efAP/MAN+yADAoGO/T039w
+8CAc+5+M7AAAAHBiV49zCK+NBVBFN6eTj1hIDnhhDYd2bON/f8wODte+vjAoEPfGAEA0Dr+pqRAO
+/QAAIAAAvzgvHdesAOe5ADgvF9/FxWBV9N/F5c8cHPjFxdMqKgMD/wQD8Eg7DrehoY9+dnBbDFhM
+P6eGBb+ZAEg+Lb+p6TApGjAoFefMzP///wAAAAAAAAAAACH5BAHoAzwALAAAAABsAgkAAAb/QAAg
+ICgajwOCcMlsOgGFp3S6DFCv2Kx2uO16n9Fvs0A2mM9oQ1jMbgsL6XMgnj4gEoq8fs/v+/+AgYKD
+hIV9CwwNaXN0cnEODxBpEYZ5EZeUghGNZoycamRwZqGjZ6JlcKKgqqqfjaFXa25OmFVHtwJJs7tC
+Vry/U77Av7JspJ/Fw8pvjZ6NEhOVCpiX0pqU1dPU1trcghQVi67OZg4BAZFnmYDZlt2an+Rpra71
+9vemZMtZtb24SEr2eREm8BfBgl+SJSyDDOEyeo44WbhgLVs7b3suXuS2ESMfDBnQyBOXxtw5dJLW
+/enYsc8mTiNN4ZtJkxMsh0/6DflnRNcY/5xODgIVI3ToFQ27jnHaEKqp06dQo0qdSrXAhmacOHTw
+UHGdRUx6tlkCO7YbtWpf24k1m0nsWmkfQETkFOKk3bvoRLA7m1HlnxF47YZAVrOw4ZtJu+gkwjNX
+QCYKwQAjePJKUYdCKwc7Z1SMUsOgQxeO2YBECY5esbVVXfYrW9auY4eFjXb1O28mTqDoVNPkyRQq
+/LoU3pLPy8IrzLAIldzAcjLNnxeIzlx5defXpUdvgQaxlMhOwOe8ZKuxT8haxA+swl4K585cmAi7
+PB9+l8+i8+vn5CLwuRdcdTXbO7UZZ1tsrLHlxzYItiacNDDEwBtNvgFnxoN9DTfIcft1WOVTK95J
+loV6TSzWmGPhpTdZL01Y4aIvLtpHWYtcvCefQEjNgl8cLVTl449ATsUdHTEZIMMMqA14VoIDKqhg
+gwY6WaCT3kwgwVz4mGOhOknC4+GXM4GoDxUkvqEYef6Y91hCK8bH3nv1wTfjjXDSuE+ZsTBkk31u
+QDRhIzTUIKCDUWYoJW2EGjrlokxaY8MNB2B5Dw4qxIHhNRuCqak9YqqHpxcmqslnUCzS2Z6bRs35
+5qmoKvPpFDvOM6oxWHFyQA6nVeIagQky+tqhvAZbW6+NVmKCDjuItN+lHlmy6bP3hDhULUEAADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_65.gif
+
+R0lGODlh+AALALMMAP///wAA/+H2/3B7/39//8gAAP/h4eN/f8fH/+fn/wgI/3Bw/////wAAAAAA
+AAAAACH5BAHoAwwALAAAAAD4AAsAAAT/EIAgqr2DyM27/2DYBRLJkea0pWLreiyrpvRrf8UdFrzh
+/0BDTteiXI4Zz5DIHK2eE1OtSS05rVGsrBo6cCW8QnC8/JaOSE2nLGJzY4Fa/GRmbuNyKX5b74fH
+QW5vaBhqHII4fSohfIo6jXSOkjs9gD+IVEaEAklrNph2IpCTRS6jpABeX3+WPmxhYRs8ppsVnU2g
+RKeoobxVuS+sra9LswDGorWchr6mzX27z4mrlcNrxUPIjMq30ozeX9HgsmbClsSy2TnI2pqE3WDj
+WPI2CAT3AfcECPRd5dXnrqUDM8tYO27M4gX7Yg+fPn79QiRQsCeAggQRUZkDRAzWwGOIHNyhgXfs
+05eJFS9mDLGg4oKVpDaSEQjyozYJEQAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_67.gif
+
+R0lGODlhUAEVANUyAP///8gAAP/h4QAA/9e+vjgvFO+/AP/MAAAAAPfGAEg8Er+pqa+allBBD3Bb
+DI9+dnBiV49zCK+NBVBFN/fa2kg+Lb+ZANesADgvHe/T0+fMzDAoFee5ADAoEEA0DmBODZ+MiN/F
+5cefAEA3J5+M7CAc+39w8DAoGN+yADAoE9/FxRAOCAgHBBAODq8AIBAO/WBV9L+p6f///wAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAzIALAAAAABQARUAAAb/QAAg
+ICgai4OjskgoGA7QqHR6QFit0isiquVevdUtFhuGds3n8TZMJlPf0oRioUwu7/jjGs7vZ/OAgYKD
+hIABh0KJiouMjY6OV4lEd3aADA1+mZqbnJ2emg4PS5WFeHufmQilq6yteYcBj7KNsbOKkUKTo4MQ
+Eai/wMHCUhITlK5Lp8NTqsjOz3e6ArCztbbWtgC4Q3ikeRQVFsvj5OUHFxgZx9ACyuXN7PHI0tSy
+2PbZidvSR955Ghs4mBtIkFOCDgS6xXNHDp68h6XoIcKX7d6sfQoJLfBQsKNHKh9A5PHniuE4hxBT
+BpJocVHLfLIwriP0wMHHmwUjQABEspXJ/2UoVQpdORGm0ZhWJN0J0TPPBAk4o44TMYICz4Udgw7d
+uqTe0a+MZBohUcJEUzwZTqCQyvaXgRQqAp0t9XOYVq54pxUFq+glpKS5xpYYMMAsKwIrtChezLix
+48eQI0uezIKO3HgtJmvW0iJvXpbV8vlthJEsYcKGPaecq3oQ69awY4OmeM3oNheDT59+EVve694z
+gQvvPfvR6L62AQ8JAUN34eHQfkNHMr265+KOjvOVyfy0CeuupE8XD778vL18wYoV0P27+VLkh8d/
+T3+Q1/TqlfNjH6M+ofnAAejfgErch592t+hHYCsCxtbgguZhR4toySGgFITwYSjAgxpWJzMhIwgO
+UeGFHQrCoWonlijchy5RCNN6KmYEYYoxynaEgSDi9wiMNdahIY09AoejjvlEEgQAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_68.gif
+
+R0lGODlhqAEEAMQQAP///wAAAN/f/x4f/+H2/wAA/3B7/39//8gAAHBw/+fn/wgI/+N/f+NwcP/h
+4QMD/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHo
+AxAALAAAAACoAQQAAAW6IBCMQGmeaKquqDAQcCwXbG3feK7vvFnIQILhkELkjD1UosBkJpLQnWLR
+XCiiWBYDykB4vw2wwxH+orwmNECtRo0C2Z4rOIvb7/jejw4bRpFYU1VXeXhLToVxgDpbJ19jkJFj
+i2uAbGiXJm+JNnN8BA9NoqOkpaanqKmqq6ytTQ+fQkScOocFT7Rxgla5UJQ4lI+SksGLmEZtbZtH
+Or8mnnw0vdPUOXt8ftUsu4TaPUu43sA9xQjDxHchADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_69.gif
+
+R0lGODlhVwAWAKIHAP///wAAAMgAAN/f/x4f/+H2/wAA/////yH5BAHoAwcALAAAAABXABYAAAPU
+CLHQ/lDA+SQFg5TNu7lg6CyBWJmORWVdW3xo3JCyatoQ63KwjNK+4Eqz2/SEICByqSselxMlNNjc
+PQ3YrCP7pEhFuFDYUXVde1hAWt2FfMU1ULl13tZDb9D4sscQnRBrbIEwgg95fHEXcx6Edg+ChiMM
+U0KMPIRckJJelJU+l0aOg48miJ9yf1ajpJwXpxN9salFopuPnK6wEYpDtS+sbFxrup43vROhwKiH
+xmDIOapmzM0l1CjKbZW71w3Z3QrO4MnSdODcKdAP393oDbK8i+WN1wkAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_71.gif
+
+R0lGODlh+AAGANUzAP///wAA/+H2/3B7/39//8gAAHBw/+fn/xAQ/+N/f//h4b+/v62txQwM+9fX
+139/f2dnl4eHh/f396+vrxAOBkA2EDQsPRgVCzAtIXBaAH9mAAgHA+/v7xAOB//MAHBbB4+Pj9es
+ACglGkA9ML+ZAK+MAFBNQZ+fn2BPDIdtBHh3cJeXl2hVCu+/ABAPCWBeVJ9/ADgwEMfHx////wAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAzMALAAAAAD4AAYAAAboQAAg
+ICgajwOCcAkoMJ/QqHQqNAQM1Kx2uz0gDtyweJoYN5+FtGLNbiuc5inxSE9C4Vq8dMHv+/8MDQx/
+hH4OcVMLD4uMjY4QjpGOERKIlmFlTGkFbp16l0JzdEZ2aFyfTxMUFaytrq8Wr7KvF4egSxgZGru8
+vb6/wLwbtrfFWZudbqiXoqMCpZqnVBwdHtbX2Nna29gfIMbU3OLj2CEixlqZl8jJbMuWzaPQZu9L
+IyTk+dwlJsYnKPoCYkuhAt0xM+qEsGv3xmC8OkoMMlnBQqDFFi6MvYBhUWAMGRKn1BOJRg3DhsWC
+AAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_72.gif
+
+R0lGODlhbAIKAOZEAP///wAA/+H2/3B7/39//+fn5xgVCv/MAEA2EL+/vyAeFN+yAMgAAP/h4QAA
+ADg1KMefAH9nBH9+e9/f3yAcDJd5AGhmXuN/f4eGg3hhCL+ZAEA9MJeXl2hVCvfGABAOCPf391BN
+Qa+MAO+/ABgWDcwODiglGtesABAPCZ9/AGBeVI9yAHBvac/PzzApD1BDD6+vr8+mADAtIY+Pj3Bb
+BxAOB+/v79MqKtMwMDCYMACAAAAQ3zCSKnh3cIdtBGBPDJ+fn8fHxzgwEBgVC////wAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5
+BAHoA0QALAAAAABsAgoAAAf/gAAAAQKFhocDBIKLjI2Oj44FBgeUlZaXmJmWCAmQnpAKC5qjpJUL
+Cp+pqo4Mq42tjAyyDbS1tg2wrrq7vAy3v8DBwsPExcMBxsnKy7fIzM/Q0dLT07K5vNiNDtuLhIff
+iazZkA8QpeeaERLjjBMU6PCWFRbs2BfY1wDWxPn1/q6+qAkc2IygwWMHEypcWE3WP0H9Pm1z0O0b
+OEWvAKrCkCGeRw0b/nHo4DEep4coH92LNWtYxJQwITKcacwZTYM2b+rcKTAgLWupXorTNbGiRUPh
+Mq4SushdSXgePoDwF0LE03MjSEyNyZWlz2AlrIkdS7as2bNo0zIowbNtg5xu/6HBjUu3rq2vQD8x
+jbWrqCBvRwUk5bt0lYkTV8+drIdiRGJSKVR09bSy3j67mDPL1bxsLufPDPE61KuRKLe/gQsNxrdK
+QoTHpFawqNfCBexRL2BMhrRX5auWoIML9yzcFvHiyKOJ3ts7m99BqQVj3F37tqYYMurNoGEdU9St
+u5Xuync5uXm6x5GnP89eWd7wj54DPrp6cqjumGrYYLdBA35LIoQA31Dj/fYVMDeopeCCDDbo4IMM
+4jDNesTkoMOFGGao4YYcdpjhDh6GKOKIJJYYIg/t4TLagNqcBl1q9ekTUw8+/GdJbuOA8IEHNlLy
+AxAsMlKZLuQBF0xzQSbJ1UWBzFA4jA5KRpmkDim+5w+SgsgXXYxIIhmEED1SIts4CSAQpgdD7Ccl
+L0PqYyQwWK4pJz4TTgPlnHjCRCVyywVVmitFBQIAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_73.gif
+
+R0lGODlhEwEGANUuAP///wAA/+H2/3B7/39//8gAABgWDue5AP/MAN+yACAeFH9+e39nBL+ZAEA9
+MP/h4WhmXpd5ACAcDN/f3zg1KMefAGhVCpeXl+N/f7+/v0A2EGBPDJ+fn+/v7xAOB/f39xgWDe+/
+AJ9/AGBeVK+vr1BDD3BvaY9yAHhhCIeGgygjDtfX1yglGtesAP///wAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAy4ALAAAAAATAQYAAAbhQAAg
+ICgajwOCcAkoMJ9PJ3QKMBwQ2Kx2y+1iEwqqeLlgeM/obMMxbrvf8Glh/qjb7w9pfM9/Eo+ASVB6
+bYRtEBFpil4SE30AFBWLk1kWF4+YSxiZS3MFeKCGnKN+gIFKmKJiGRqUrhscfR0erpSNpH2qbZtM
+nqB4uricf6ZFgsJjHyAhtYsiI30kJc2KFRTIe8Fihr6/dtrYfMTFx+FTIyLUaWB9JifqaCgp5m/g
+clF03nWqnnNw/p08PRpnqlwnetLgoVGxgg+LFgq9MKTnhlc2fJ/05RmkB2ChjlI8vgkCADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_75.gif
+
+R0lGODlhTQAVALMOAP///8gAAP/h4QAA/wCAAN/F5Z+M7CAc+39w8K8AIAEB/wBwIGBV9L+p6f//
+/wAAACH5BAHoAw4ALAAAAABNABUAAATPEIAgqr04i6G7JlIojmQZUl5acWoKmnAsoW3H1p+slzSO
+3b7La0ecBDPAo2BY1PWUySOzGXtWCrhoB5uZUk1PwwGRxSEOBsyUAGK3h2wZTTwYkGtaDaKOtqzj
+bgBxgl4jFHR1dmU1e4l9fxKDgzsJB4mXmJmJCpqdmQcLI5Ivk04FDJh3Sh6NiQwFkISRhWBXqHWq
+q3quXLGjs3IXp4q6HXuvQqKky8BVGQUNxR0NXMlfwdLStNcn2drczt662+BW4jjk3ObnLenX6+wu
+4CURADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_77.gif
+
+R0lGODlhcQAVAKIFAP///wCAAP/h4cgAAAAAAP///wAAAAAAACH5BAHoAwUALAAAAABxABUAAAPB
+CBDS/jDKSet4I6vN1ejg9oUkYW5Mpa7sdDnZSALy7NmgSaBt71sYja2GK3J0vJ9yCYkZn1AAUpFi
+Wn/OqHY2XVy/vewWRMR1q+A0LFjutEPv0omqrjded+Es7o6e7XV4AmIkfByGHX+AaYKEcGNFiot2
+jpBbkpNqlZZ+c16ZgXqcNJ07dKBWjaKPRohHnmioWGw4rqRQmLI+qoa2tgq5ui28taNypp/CqavG
+T8HKu8zNkbDQy7/FuNXWw7RDT9hICQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_78.gif
+
+R0lGODlhwwEEANUqAP///wAAAMgAAN/f/x4f/+H2/wAA/3B7/39///f39xAOCPfGAP/MAHBbB4+P
+j9/f3yAcDNesACglGuN/f//h4VhVSqeGAK+MAFBNQZ+fn2BPDIdtBHh3cAMD/++/ABAPCWBeVJ9/
+ADgwEMfHx+/v7xgVCzApD8/PzyAeFN+yAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAyoALAAAAADDAQQAAAb+QEBg
+CCgaj0gBcnlUMgEDQmFKrRqe2Kx2y+16v1tDdVw4IJbObZqbUCwY8Lh8Tq/DG47vA2Lv++MREmCD
+hFgTSQICFIuMjRRrAImEkpFrlF1DAV6QWZxGUWRWhaOkpaZZYqFTZmhdnlkVFn+zdRcYXxkatLtx
+GxynwIOJio6OkJeIyJKUyk7LlmmZwV2gqgUdBtna29zd3t/g4eLj5OXmHdZlZ0muYLm8vB4fXyAh
+8LsiI9Nfh6XDxcYQMWHmTMmwIs0QPjNySdo+LdVUXXlIsSKwVKpYFXqFhUSJN/dmmTjhBUWKkH9S
+oLCoZlA/hokANjrmiaDCm5WaFMSJJAgAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_79.gif
+
+R0lGODlhVwAWAKIHAP///wAAAN/f/x4f/+H2/wAA/8gAAP///yH5BAHoAwcALAAAAABXABYAAAPT
+CLHQ/jDKCcUgOOtCu1+B9xiiQ06WphJc6Tbge5ZzlK5Z+5axW3u/xw3H2rl6NBlliNMZO8inFMBc
+OQGFrNahvUqiU2NVdc1yOWasFwIOv8YbSFotXz/alGB+eSEWH3NzDWmCDngTeoh8fn9njoOBa4cS
+iZSLfmVdXoURkxGVn5dEmZARnGwMbk9wOXWPrxOeqih9o66lhC2nsrM2tU23uFulnalJPqLAvXfG
+IqAQlawYdm68Jkq0jNRh1g3PI8lWy8wh4yXSjePd4+jbU+vL7eYACQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_81.gif
+
+R0lGODlhEwELANU4AP///wAA/+H2/3B7/39//0hFOLeSAP/MAH9nBH9+e8/PzzApD5d5AGhmXsgA
+AP/h4Z+fn2BPDL+ZAEA9MI+Pj3BbB0A2EL+/v+fn5xgVCvfGABAOCPf391BNQa+MAO+/ABgWDeN/
+fxAPCZ9/AGBeVFBDD6+vr9/f3yAcDMefADg1KBAOB+/v79fX1ygjDo9yAHBvaRgVCyglGtesAM+m
+ADAtIWhVCpeXl////wAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAzgALAAAAAATAQsAAAb/QAAg
+ICgajwOCcMlsOp/QZsFwqFqv2Ky2ikhEm4rFdky2MhrftFrtWDfbTIf8Qa/bH/Cl/LkH9P9wfUKA
+g3lOREeJSW6MaRARZZFaEhNuFBWSmVYWF42ebJ+GfnN3d6KCcYGqhax6q6NRiIlGi2+fjBgZmpoa
+GxxrHR67kh8gv7fITSGhb6SldaKwrISwcnnUo22CqLKzArVxbtFrExLDkpxrIh/nZSMkyfHxy6kO
+z3bj1tvWqdKFqHsAGuo2C5wecbcutSvTRc0FCwvJlDAhr2JFa/egWWSEKpY3WkpsrRmn5gSKiGNS
+qFCTAAFKLb2ObfxELx7GjHhmjiTZhKCijpC3eKZRkeKllhUs0pQzisVDB51BaTazh1MoVH9ffCIB
+ejVKS6ZYJn7hsEEDWCsRIHRtZJXPVJw518bTClJulBYuzlp5AePLQ70HNMRIaheUp1PO7rUtDIVu
+EYODGMuYAZhGjS8wXgCmxFhNTY5vq3b+5Pgb18gjk30FjOJElBo0ANu4MRrq52xwF9cGEAQAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_82.gif
+
+R0lGODlhbAILAOZMAP///wAA/+H2/3B7/39//8gAAMfHxzgwEP/MAGBPDJ+fn+/v7xAOByAcDN/f
+3//h4QCAAAAAACAeFN+yAJ9/AGBeVK+vr1BDD8efADg1KON/f3BvaY9yAH9nBH9+e8wODksAn8wQ
+EBCIEBCGDr+/v0A2ECgjDtfX1xgWDue5AGhVCpeXl9esACglGq+MAFBNQYdtBHh3cLe3t0g9EO+/
+ABAPCVhVSqeGAPf39xgWDTApD8/Pz3BbB4+Pj5d5AGhmXqenp1hJDr+ZAEA9MMew6H9w8BAOCPfG
+AEhFOLeSAOfM5AgH/v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5
+BAHoA0wALAAAAABsAgsAAAf/gAAAAQKFhocDBIKLAAWMj4+OkJOTBgcImJmam5ydmAkKlAsMnqWm
+mQ0OlKusra6vrAWyD7S1tg+SsLq7vL2+vgW3wsPExcYQv8nKy8ysEMbQ0dLFwbWyuZTYsbsR3YuE
+h+GJkNqr5bsSE6frnBQVlBYX7POYGBnNzBrM19Dn+P8AAy6qNq3gNGQCEyrE98ygw4fWbF1r5Y8c
+N2+CwIUzNO5XxVcbONCbN0ECpQoURrLr4GHhro+U9DHiZ+zDtZs4c+rcybOnzwIgfgodSrRACIhI
+hYmAwLSp06dQo0qdSrWq1atYs45IyjUaQVyyKCbsFuHbRkSKXK4iUUIlu1ST/9K5PWXihFpYMCdp
+o9m1r19aAf4KHky4sOHDiBNLm3gXElmzZwt1bAwJRYq5plSsgOSgAeZSLFpQdpXX4sxZilPbCqy6
+tevXsGPLpsV4tKDHGSNLTjuTMsrPnly8gKQgAfBOMGLYZiXzZSTUswuzjk69uvXr1GsvK70I9yDd
+AiYPxLtMxozjnGjUgGTjBvpNBwwsB9hcEF/sXafj38+/v39jX2mnF3m6eKfRWeLZR2AyOORAw3ua
+6LDDIzU8CCECKaAwn0v3/WeQfh6GKOKIrwUY1javcHcbRt/plmAjCybz24UI8NADIzvoQCMCPvyw
+YUz7QEdiNCAOaeSRSEJkImdM3KkIgIHgvaiLk5QAEcSOQgzBSA887FgCCT8OyEt9jQiZJC1EFKFm
+AGoWQcSZcMYp55JiCQSli7xtiIMRR9B4hBE4LIJEEjTSkEOgYUbSy15mnqnEEgFEGukSSshp6aVJ
+CkjZY4EAADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_83.gif
+
+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
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_84.gif
+
+R0lGODlhPwEZAOZeAP///wAAAMgAAMfH/y0v/7DA/+H2/9ru/2t0/15f/9/f3yAcDP/MACgjDtfX
+16+v/wAA/9fX/zY3/4aG/zg1KMefAN+yACAeFGRs/6m4/4yZ/0hO/4eGg3hhCIdtBHh3cI+P/z4/
+/0c77zo7/15g//jf3zgwEMfHx/3399MwMPf3/zAw/+N/f88gIOqfnyglGtesAOe5ABgWDuePj39+
+e39nBJd5AGhmXs0YGBgY/0g9ELe3t9ZAQPG/vzUaEe+/ABgWDff3991gYJ9/AGBeVL+/v0A2EFhJ
+DqenpxAOCPbX139//7eSAEhFOGBPDJ+fnxAOB+/v77+ZAEA9MHBbB4+Pj/fGAFhVSqeGABgVC5eX
+l2hVCufn5xgVCv///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5
+BAHoA14ALAAAAAA/ARkAAAf/gAABgwCFhoeIAoiLh4qMhwMEBQaUlZaXmJmam5ydnp+goaAHCAmP
+AI6nhqmqraoKCwyys7Szgwy3srm0u7u1sg0OiwEPxcbHxxCChK6FrK3PjxESCAei19jZ2tvaBQQT
+qtGP4s3lABQVv7+3vQHr7rrw6hYXjMTI+MXKgwHm/v4TCGDIQLCgwYMIEypcyLChw4cQIyrUsEFC
+BGjlyP1TxaGDOl7ycvmKZ0veLw8f7OXLt4/ZxpenIoAIQbOmzZs4c94UobOnz5ojfgodSnQoiQcw
+xyV9VAKRgwYfS0rFZZKkVXUmTqhciaxlv6Vgw7pCkQKFWEMqVqg4y7atW1cs/1q4OPQCRlSq/ERW
+pTr1VwwZj+5xNebVnMZFh9+qmiFgRlsQEEAonkz5LAsBAuQWolEj6kh2e9t9tHEj8OBky742S9yo
+sjkUOATgMCtWRQ4IOda63t2a96LLmDO7OGHCc1XQeUvyi6pjh+nT+lIbnu57cXDHYiFDiFydN2tn
+/ngE71FIPGbywINn9mHhrvv36n4ACfIceuGM1Lsvgh18dljb2+Gmm36TfYeKW+lhJkQJH3gA34Pw
+DUHEKYIVQ0yF0fFDoG+MqYfdUtoFKNmGihloYjnpLVhIEUZA6GJURyBBITIX4nMfiZTxp55/SQEY
+oIA4knhiM5epeIgMMbyoJP8tSdBXn4UPYPjAjUG+pQQLWGbJghJLRbDElxB8ucRFVZapVDM9NLXI
+DTYsuSQTTaiCYV6DECYdfniaqZgyevaJGFg76OCmkk48ISd0GbrkioEH+ukWn46CxahvQQDxw6Au
+QhHFocdUKBiVGOVZ5qTlQBppUkPyRsQQmD4oxRStzCnYp3eult+ob5l66kup7obEEa3CR0UVsdIY
+JZSJqrZrWKQ2o+uy/vQaTlhBJGFFsO4toECxnUJJq4bQMptruJVJC9MVWGAbVQUUuDKnMXUmS26k
+z86rX7OMPOGEuh/VQIO7iE5Z66K32utPvQb7hu8iUWRxLb+1BAMwoqBOK2piwqVibOupTTABMS30
+NCPlShWfwujCJY6rcagEd6fFFh/PgpLIAZd85sZmonwKwiuvcvFuXHQRsyxZ0UzxwD2zzBbPSZt7
+c1hTSBHzX+WMzBLSSZusctao/pxURzGTVnXNgQAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_86.gif
+
+R0lGODlhvAEZANUgAAAA/////+N/f8gAAP/h4WBSUp9tbf+vr7+Dg0A1NQAAAId3d3hTU7d+fkg8
+POfMzDAmJq94eEAwML+pqde+vlBERJUUFEkyMv3a2tMqKud+fs0VFeNwcPa+vuqfn88gIP///wAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHoAyAALAAAAAC8ARkAAAb/QEBg
+SCwahcahwDhoEp7QKKFgOFiv2Kx2y+16v+CweEwum8/otHrNbncRCSlhEG0Okkw8/q7HK/4BSH1F
+goMBdnJSCwxujY6PkJGSk5SVjw0OcnRQdoZ8hoegRX8KgUZLeoWDiIlQDxARCLKztLW2t7i5uru8
+vb6/wMHCw8TFxsfIybgSE5p1TZ6iodIBpKZFn0mqRKhErK1PFBUJ5OQW5ejp6uvs7e7v8PHy8/T1
+9vf4+fr7/PQX8c2ccYK2ippBa6qyHdGj8Bu4RJseSpxIsaLFixgzatzIsaPHjyBDRsGQAQPITgZT
+9kGYJxVDJk4yRhRJs6bNmzhz6txpU8MA/w0nCaocOgqQqm7aXsKcWZEpz6dQo0qdSjUnhg0DNpjs
+aEch0WnSWErbpiSJw4ocqqpdy7atW6g+mwCVOdCrWWl2VxqlRrbP2beAAwseTLjiVTta6c5BWVBU
+Xj1iufXpy/Bv4cuYM2vmGdfO3It0ujrGe3Avtsl6kGLrinaz69ewYR/umhi06NFf9ZZKiHqP364x
+wTmNTby48akdOCgfoJxDh6bAH+cuvbslnr7So2vfzr279+/gw4sfT768+fPo06tfz779+enwq5mW
+7NK3J/f48+vfz7+///8AAhifUmHNB0pfqt0X4IIMNujggxBGWJ43Kkl3GjWRHTjghhx26M3hhyCG
+KOKIJH5ooX2gnFhUdUUkSARlJcYo44w01mjjjSm5SFpKKoIlSoY+LoSHjkMRieORSCap5JJD9Ygi
+NU5Sdw2F9d01oFceSKjlllx2yeUHuUXJpBFAPobdhl4JYOSYbLbp5ptDiGkdnKAASeSZVyahJp18
+9unnjXK26GaUQA6C4IYJ7vnnoow2iiagFe5YIIuiwBiioo5mqummjdUoZ4+EGhjAnTZiyumpqDoa
+KH1NRorbpFPG2ZueiOq5Zqq45qrkqrIS9emH1gQBADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_87.gif
+
+R0lGODlhHAMCAMQTAP///wAAAAAA/8gAAN/f3yAcDP/MAEg9ELe3twsLEAAA/AMD/+N/fzAtIc+m
+AO+/ABgWDff396+v/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAHo
+AxMALAAAAAAcAwIAAAWbIBCMQGmeaKqubOu+cMwKcm3feG4OekoUhqBwSCwagwdELDFqOp8KgXRK
+rVqv1QWKt6KpuL1disE4Dc7n8CpdY+/AbXjLrWal5Sl6fc/vx/BtfoIwTSWFfzKAg4svXoyPkGZ9
+DQ5HlpcGDxARMQESn6ChoY6CpACKAKZie3hkZlx6dbEudLMwtnmofDy4Jb2Rq8C3OrovxcJhhSEA
+Ow==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_88.gif
+
+R0lGODlhPwEZAMQdAP///wAAAMgAAAAA/39+e39nBP/MAJ9/AGBeVK+v/9fX1ygjDlhJDqenpygm
+HUA2EBgUpYYIBff399/f37+/v+N/f/jf388gIOqfn8wQEBkAAN1gYPG/v////wAAAAAAACH5BAHo
+Ax0ALAAAAAA/ARkAAAX/IBCMQGmeqICup8q+cCzPtDzUeK7n7u77hIJhSCwaj8gDAhdIOJ9Q6G0U
+wPVm1592ld2abt6wOFXrjmWKBXLNLjIazKj8OSWVreew2QvO+317XH81Dg+Gh4iHEImMhxEScXNy
+dVWDloB/fZebL4FkNJ4+ExSkpaalA6eqpaEoTZJRlJyzWJm0tzutJbq2oDmvsHQidrjFl5rGyVq8
+fsgwzCLBUsOVvnfKt87Y29bG2iwVv9LCVHjX3Jvf6F7Q6zDqW8BOTfJOsue17gDtNPD6ufj+ffFi
+gUU9epOomeu2jt8MfwIXynCIC2KJcOAuYHAVBWEshRH9UIxhMeTEgM+U/5XcU0GAAI0mDlIZQY6Y
+STEj392kxSunlpUvWrp8ubEerHs7TZZMOsvnj5IZMAoVUGHq0AsaxtkDyfAk0y1Lv15y6iMsuKEu
+N1iQmYBKzWr5uorNYVYs2XV1UUxVW+JgW48JkMYdjO7uiT4DEid+CgBiXokxDA96bKIl35gdadLc
+Wg5lSn2SSyA+XLbxw009k1IuwaEgR62C5+oIbVo06caLRecerRiM4i83fOc+k1ourdUwjEqKLRuy
+GMS9bdvmPTC4dNPCa2svVtzbIOVzmDfHNlp77+zXrUNfTP26Sdr9vmsNzJVw5PE6ytf+5rv6fv/T
+DbQTfKf9AV5CnRnXCU9+dAn4X4AQsveghLiZlweB3hk4n3gLeoYNbfrtN9xvumFXYYXZCYecIArq
+s6JBG9bnVYvJgMjgjDiG9OIKB36U4I32hbGjQN3lmI18sIUAADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_90.gif
+
+R0lGODlhvAELAKIFAAAA/////+N/f8gAAAAAAP///wAAAAAAACH5BAHoAwUALAAAAAC8AQsAAAP/
+CLEr/EvBNaa9s0Lh2NDBh41kaZ6WaKpo64bgK1/sbKexm7vd7dMtgjAgMRU3P0ZPuWQ5PyBoTEqB
+wqpXjzULe3IhomdNqxXvutHttUbFVs24rAoOtrbb6/S8MsZL72pjD2dJJYQjh2BBQ0ckjYUlHINp
+bmEae1heXXKXfJ2Vlhmen1+VZJiTmaR2l2Scqm6nqLM7qCGurK+5oLFzuIeJkCkvwR6LBERIF4/C
+GJKur3k5fZTR1LzRqda1U6yEatuxaNiW36vn4thl6OC2tNDjhjdLOsQnxQ9CyI2HzAH08yY869UJ
+kCZo70oltPXrDTiCnATF+4MOVsQteBpuy6gu5w85jKTCQZSY4QY+IPWaBdCXbBAGfydXCGxSjSTI
+OhoZitQpkkbFNz49ifrYcdK0ijy1aUoI1N1PpohMqpxKgiW/lyiT7BiYDdNCoaDAekUaUtbPnGKP
+WvxK1KPCUarOqmM7FmxPtlllxKSaxKoyCzAhbaX50E+7m7zYII6XLRUdnA4LnjG8VI/Tx44pYc5s
+9OvYOgcvllVkAyDfFnv9nvBnegZArqeHxp5NW/Be2iRj3xZsTyYK1UZqb2g9O7fw48jjJEe0W+vy
+Wynl/Wb0d4K/2LCFG3/OHXfz09upfm9gY/fJ1EMSAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_91.gif
+
+R0lGODlhQQAOAKIFAAAA/////8gAAON/fxAQ/////wAAAAAAACH5BAHoAwUALAAAAABBAA4AAANe
+CLEr/EvBNaa9s8KhA/igAI4fcTlYaqEPx0gMqz7yrNaBG202hPerTAcGzBRVHYbOc2w6N0Pec4qM
+0ppJak748jV/T9ySGACnzF/urpXWxtRMbZY6H7vvKTsbj18mAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_93.gif
+
+R0lGODlhZwAaAKIHAP///8gAAAAAAON/f9MwMMkAAMkDA////yH5BAHoAwcALAAAAABnABoAAAP0
+CBra/nDFCRmd9uopustbBIZkaV6d8J3PyL4w6jWuOcT4VlPpmsO7S7Bl6tF+QNbQRzJKYrfkaXks
+OQFUYSxLRD6uXIx3/ALjwuS0WUEIuN/wuHxODxDSouLsia37/3R8JVxoa31vLYGHcQtzgiSEeipV
+ixZujXKYgIhYSpCSTIx9jR+WIJeVnGiPXoaiqKZPsZ2pqHgxrnCJFbKWmrq3uHu0lb2/xrSKwawy
+k3yvvqPJpMmOxIOfVsMZ0NHUttKKq9da2s7Em+mw1uOR5qHqgL/A7be58fjAyyz3+fn7ZbbR8OcP
+IDkNhgoQxGeAmQZ3TTwkAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_94.gif
+
+R0lGODlhoQEBALMIAP///wAAAMgAAAAA/wICAwAA/AMD/+N/f////wAAAAAAAAAAAAAAAAAAAAAA
+AAAAACH5BAHoAwgALAAAAAChAQEAAAQuEIQJqr046827/5gAjtZAnmiqbiLYrrAJc8Rk33gx7Hzv
+/0CfIZQ6zDBGZBIQAQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_95.gif
+
+R0lGODlhPwEZAKIGAP///wAAABAQ/wAA/6+v/8gAAP///wAAACH5BAHoAwYALAAAAAA/ARkAAAP/
+CLHQ/jDKSau9OFMxuv9gKI5kaZ5oqq6roL0BIc80PShMVmj76//AoHBILFZ6xuQwVmvKbosAb6qs
+Wq9YanbLfTCdNWgOg7yUu2a0Gn2mtNdwyRc8E0t12vjkre8D+RGAfmtzdAR2g3CCiYx7eGSNVYV0
+iJFci5aZj2maRJNglZ2io6QSmKVyNTGToZyQqLCxL6eyDYWrTa0WtAC8tb9EvsBJtwSsOHevypHC
+w1W0zc6pNFFRdch5u5rR0kXQ3Z6GNtjgm+Vq38vnCk3V41HrrvGW6fO3TAvX8PPPvfyDzXZw41Js
+xhddR7JtK8DQjT9TvRg2VNdgoKwyEgEJdOQA/yMEj0UKyjhIjqLDUSB9bOwoxKIVlwlZ/kCy8qHM
+ikbujSS5zyRHejcfSKw4lGiPmg+LRvR3tOHQlUrX1FMYsenEqjhx0vwoNGc7a/rGyNOWCWPKmmiZ
+ZszKlGhbrW5twpxljsdZuXi3bu0aVMgnJwj/se1o1anMtVAJP2XZ9PDNuVQhUpyYMW3VxFnPpFwi
+LmwywXwD2WSb1rJmxnyPPiY1tetpuLArDx4992+ukqAlw3771vBevW5Lk+7rbO9u4UuR8h5cu/MT
+3GR9MlNa9PdGpFYJ96aM/So4s1erH74+Wm31qJydB/45Njfdi+6JOT8EPab0PpBVokfVOj4E2wNh
+JAAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_97.gif
+
+R0lGODlhQQAZAKIEAAAA/////8gAAON/f////wAAAAAAAAAAACH5BAHoAwQALAAAAABBABkAAAOK
+CLEr/DC6SCucbwymHrYSKIaQxpUjmY7fYi7dWm2ySGd3XO98maO9YOoV0AVaQ2HkxiAakSzlZfnz
+8KBBpBNYw/a0VSVTOg5spWhb2JVuu9ZHXllYPjO8FvwOfLLu3XwwXDJ6XVR9Ym51cG6KcHONcnCF
+S4qHgn6GbYFFU3+bl50ZV4ChRj2QqKEJADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_98.gif
+
+R0lGODlhCAAYAJECAP///8gAAP///wAAACH5BAHoAwIALAAAAAAIABgAAAIYhGOAl6sNmXzT2Ujz
+rXjrDnLiN3pmSCoFADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_100.gif
+
+R0lGODlhOgAaAKIEAMgAAP///wAAAP339////wAAAAAAAAAAACH5BAHoAwQALAAAAAA6ABoAAAN5
+CBG6/tC1GCeNIrNlb/VQBwaZsJ1jmK6YJrJwvJSobMP0e4P6lXO2ngrnAsqEDyTkV2MpjSzmc7jz
+MKtYXzHLXW67nulsK5Y4Y9LgmWhqlKGjcvoI9rbr4Cseq9+b2SdvTWFoZGorcoZ0iIV3gymCK31+
+NpNYA1w0CQA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_101.gif
+
+R0lGODlhoQEKALMMAP///wAAAMgAAAsLEAEB8AAA/xAQ/+N/f/PHx/rn58oICOFwcP///wAAAAAA
+AAAAACH5BAHoAwwALAAAAAChAQoAAATeEIQJqr1Y4H01/2AoZmNpnmiqdqa3vnC8DVNt30Sh73zv
+/z2DbDg6HC41onJJYjqfMJdIGqJCr1jnMasyIinc8FRMLldb5rSaYy0utxevJbmu2+/1Nn7P1J+V
+VnIVdCV+G4Z8iYpQiIuOaCmNJ4FwEmCFk4+ai5KbnlmVkESUXwGZonudn2KdqquvT6ExsoKWpqhj
+ia6wV628vygIRsNGCCHCxMUryMnGALWEwCi70ku+mNWrCQoC3d0KCSHb3t/hKuPk4BXQl9nY7o/X
+8JsL5AILI/Xk+C/63vzP4EQAADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_102.gif
+
+R0lGODlhvQICALMKAP///wAAAMgAAPrn58oICON/f/339+FwcN1gYPG/v////wAAAAAAAAAAAAAA
+AAAAACH5BAHoAwoALAAAAAC9AgIAAARmEIQJqr046827/2AojmRpnqCArmzrfgMhzMQAy7R9xrNQ
+W4XCa0gsGo/IpPKjqqgmAVEzY8hMl9isdmu5cr9gwKF3CI1n5dVZkK4UEIm4fE6v2+/4hC7cGuT/
+gIGCg4SFhoeIUwIRADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_103.gif
+
+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
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_3.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_5.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_7.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_9.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_13.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_15.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_17.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_19.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_23.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_25.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_27.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_29.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_33.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_35.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_37.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_39.gif
+
+R0lGODlhdAAWAIABAP///////yH5BAHoAwEALAAAAAB0ABYAAAIzhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKo8FADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_43.gif
+
+R0lGODlhUAAWAIABAP///////yH5BAHoAwEALAAAAABQABYAAAIphI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvd+XQAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_45.gif
+
+R0lGODlhSwAWAIABAP///////yH5BAHoAwEALAAAAABLABYAAAInhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zusFADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_49.gif
+
+R0lGODlhWgAVAJECAP////XPz////wAAACH5BAHoAwIALAAAAABaABUAAAIshI+py33hopy02ouz
+3rz7D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKfQUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_51.gif
+
+R0lGODlhVwAVAIABAP///////yH5BAHoAwEALAAAAABXABUAAAIqhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+3ysAADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_54.gif
+
+R0lGODlhWQAWAIABAP///////yH5BAHoAwEALAAAAABZABYAAAIshI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKEwUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_58.gif
+
+R0lGODlhJAAVAIABAP///////yH5BAHoAwEALAAAAAAkABUAAAIahI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqVAAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_62.gif
+
+R0lGODlhWQAWAIABAP///////yH5BAHoAwEALAAAAABZABYAAAIshI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKEwUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_66.gif
+
+R0lGODlhJAAVAIABAP///////yH5BAHoAwEALAAAAAAkABUAAAIahI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqVAAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_70.gif
+
+R0lGODlhWQAWAIABAP///////yH5BAHoAwEALAAAAABZABYAAAIshI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKEwUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_74.gif
+
+R0lGODlhQQAVAIABAP///////yH5BAHoAwEALAAAAABBABUAAAIjhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2vRYAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_76.gif
+
+R0lGODlhWgAVAIABAP///////yH5BAHoAwEALAAAAABaABUAAAIrhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwQWAAA7
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_80.gif
+
+R0lGODlhWQAWAIABAP///////yH5BAHoAwEALAAAAABZABYAAAIshI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKEwUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_85.gif
+
+R0lGODlhIQAZAIABAP///////yH5BAHoAwEALAAAAAAhABkAAAIbhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyiYFADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_89.gif
+
+R0lGODlhIQAZAIABAP///////yH5BAHoAwEALAAAAAAhABkAAAIbhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyiYFADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_92.gif
+
+R0lGODlhFAEyAIABAP///////yH5BAHoAwEALAAAAAAUATIAAAKMhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsOi8fksvmM
+TqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5ydnp+QkaKjpK
+Wmp6ipraVgAAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_96.gif
+
+R0lGODlhIQAZAIABAP///////yH5BAHoAwEALAAAAAAhABkAAAIbhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyiYFADs=
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/images/uc_99.gif
+
+R0lGODlhJQAaAIABAP///////yH5BAHoAwEALAAAAAAlABoAAAIdhI+py+0Po5y02ouz3rz7D4bi
+SJbmiabqyrbuSxUAOw==
+
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/x-js
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/asm.js
+
+// <pre>
+
+var ops, nOps;
+var regs, nRegs;
+var mem, nMem;
+	=09
+// Operaciones posibles
+ops =3D new Array();
+nOps =3D 0;
+ops[nOps++] =3D "CAR";
+ops[nOps++] =3D "ALM";
+ops[nOps++] =3D "SAL";
+ops[nOps++] =3D "SIG";
+ops[nOps++] =3D "SMA";
+ops[nOps++] =3D "SME";
+
+ops[nOps++] =3D "COP";
+ops[nOps++] =3D "SUM";
+ops[nOps++] =3D "RES";
+ops[nOps++] =3D "MUL";
+ops[nOps++] =3D "DIV";
+ops[nOps++] =3D "CMP";
+
+ops[nOps++] =3D "NOP";
+
+// Registros posibles
+regs =3D new Array();
+nRegs =3D 0;
+regs[nRegs++] =3D "R0";
+regs[nRegs++] =3D "R1";
+regs[nRegs++] =3D "R2";
+regs[nRegs++] =3D "R3";
+
+// Direcciones de memoria posibles
+mem =3D new Array();
+nMem =3D 0;
+mem[nMem++] =3D '0';
+mem[nMem++] =3D '1';
+mem[nMem++] =3D '2';
+mem[nMem++] =3D '3';
+mem[nMem++] =3D '4';
+mem[nMem++] =3D '5';
+mem[nMem++] =3D '6';
+mem[nMem++] =3D '7';
+mem[nMem++] =3D '8';
+mem[nMem++] =3D '9';
+mem[nMem++] =3D 'A';
+mem[nMem++] =3D 'B';
+mem[nMem++] =3D 'C';
+mem[nMem++] =3D 'D';
+mem[nMem++] =3D 'E';
+mem[nMem++] =3D 'F';
+
+	=09
+// Clase Instrucci=F3n
+function Instruction(o, a, b, type, e)
+{
+	this.o =3D o.toUpperCase();
+
+	if (type =3D=3D 1)
+		this.a =3D "m" + a.charAt(1).toUpperCase();
+	else
+		this.a =3D "r" + a.charAt(1);
+			=09
+	this.b =3D "r" + b.charAt(1);
+	this.type =3D type;
+	this.e =3D e;
+}
+	=09
+Instruction.prototype.toString =3D function()
+{
+	var s;
+		=09
+	s =3D "";
+	if (this.type =3D=3D 1) {
+		s +=3D this.o + " ";
+		s +=3D this.a;
+	}
+	else if (this.type =3D=3D 2) {
+		s +=3D this.o.toUpperCase() + " ";
+		s +=3D this.a + ", ";
+		s +=3D this.b;
+	}
+	else if (this.type =3D=3D 3) {
+		s +=3D this.o;
+	}
+		=09
+	return s;
+}
+	=09
+
+// Analisis Sint=E1ctico y Sem=E1ntico
+function analizar(asm)
+{
+	var sp, o, a, b, e, t;
+	var oPos;
+		=09
+	sp =3D asm.toUpperCase();
+	o =3D allTrim(sp.substring(0, 3));
+	e =3D sp.charAt(3);
+
+	sp =3D allTrim(sp.substring(4, asm.length));
+	a =3D allTrim(sp.substring(0, 2));
+	e +=3D sp.charAt(2);
+
+	sp =3D allTrim(sp.substring(3, asm.length));
+	b =3D allTrim(sp.substring(0, 2));
+
+	sp =3D allTrim(sp.substring(2, asm.length));
+	e +=3D sp;
+		=09
+	oPos =3D find(ops, o);
+	if ((o !=3D "") && (oPos =3D=3D -1)) {
+		e =3D "Operaci=F3n incorrecta";
+		t =3D 0;
+	}
+	else {
+		// Tipo: l=EDnea en blanco
+		if (o =3D=3D "") {
+			o =3D "NOP";
+			t =3D 3;
+		}
+		// Tipo: OPE
+		else if (o =3D=3D "NOP") {
+			t =3D 3;
+           =20
+			if ((a !=3D "") || (b !=3D "")){
+				e =3D "NOP no lleva operandos";
+				t =3D 0;
+			}
+			else if (e !=3D "") {
+				e =3D "Operaci=F3n incorrecta";
+				t =3D 0;
+			}
+		}
+		// Tipo: OPE mm
+		else if (e =3D=3D " ") {
+			t =3D 1;
+
+			if (oPos < 6) {
+				if ((a.charAt(0) !=3D "M") || (find(mem, a.charAt(1)) =3D=3D -1)) {
+					e =3D "Direcci=F3n de memoria no v=E1lida: ["+ a +"]";
+					t =3D 0;
+				}
+			}
+			else {
+				e =3D "La sintaxis correcta es "+ o +" Ra, Rb";
+				t =3D 0;
+			}
+		}
+		// Tipo: OPE Ra, Rb
+		else if (e =3D=3D " ,") {
+			t =3D 2;
+
+			if (oPos > 5) {
+				if (find(regs, a) =3D=3D -1) {
+					e =3D "Registro no v=E1lido: ["+ a +"]";
+					t =3D 0;
+				}
+				else if (find(regs, b) =3D=3D -1) {
+					e =3D "Registro no v=E1lido: ["+ b +"]";
+					t =3D 0;
+				}
+			}
+            else {
+				e =3D "La sintaxis correcta es "+ o +" mem";
+				t =3D 0;
+            }
+		}
+		else {
+			e =3D "Error de sintaxis";
+			t =3D 0;
+		}
+	}
+			=09
+	//e =3D "o["+ o +"] a["+ a +"] b["+ b +"]";
+	return new Instruction(o, a, b, t, e);
+}
+	=09
+function allTrim(s)
+{
+	var t, i;
+		=09
+	t =3D "";
+		=09
+	for (i =3D 0; i < s.length; i++) {
+		if (s.charAt(i) !=3D ' ')
+			t +=3D s.charAt(i);
+	}
+		=09
+	return t;
+}
+	=09
+function find(a, val)
+{
+	var i, pos;
+		=09
+	pos =3D -1;
+	i =3D a.length;
+	while(i--) {
+		if (a[i] =3D=3D val) {
+			pos =3D i;
+			i =3D 0;
+		}
+	}
+		=09
+	return pos;
+}
+
+
+
+// </pre>
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0
+Content-Type: application/x-js
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///E:/CosasEnric/SIMM_ASI/Tema1_Introduccion/Tema2_ArquitecturaGeneral_AUX/Simulador%20LSPC/simulacion/comun_uc_cpu.js
+
+// <pre>
+
+// Analizar y Cargar programa en memoria principal
+function cargar()
+{
+	var dato, inst;
+	var i, e;
+		=09
+	e =3D false;
+		=09
+	// Datos
+	for (i =3D 0; i < 4; i++) {
+		eval("dato =3D Number(p"+mem[i]+".value);");
+
+		if (dato.toString() =3D=3D "NaN")
+			eval("v"+mem[i]+".value =3D 0;");
+		else {
+			if (dato > 127) {
+				dato =3D dato%256 - 256;
+			}
+			else if (dato < -128) {
+				dato =3D 256 + dato%256;
+			}
+				=09
+			eval("v"+mem[i]+".value =3D dato;");
+		}
+	}
+		=09
+	// Instrucciones
+	for (i =3D 4; i < 16; i++) {
+		eval("inst =3D analizar(p"+mem[i]+".value);");
+		if (!inst.type) {
+			eval("e"+mem[i]+".value =3D inst.e;");
+			e =3D true;
+		}
+		else
+			eval("e"+mem[i]+".value =3D '';");
+	}
+		=09
+
+	if (e) {
+		// Limpiar en memoria
+		for (i =3D 0; i < 16; i++) {
+			eval("m"+mem[i]+".value =3D '';");
+		}
+	}
+	else {
+		// Cargar Datos
+		for (i =3D 0; i < 4; i++) {
+			eval("m"+mem[i]+".value =3D v"+mem[i]+".value;");
+		}
+
+		// Cargar Instrucciones
+		for (i =3D 4; i < 16; i++) {
+			eval("inst =3D analizar(p"+mem[i]+".value);");
+			eval("m"+mem[i]+".value =3D inst.toString();");
+		}
+	}
+					=09
+		=09
+}
+	=09
+function apagar(r)
+{
+	if ((r =3D=3D "of") || (r =3D=3D "sf") || (r =3D=3D "zf")) {
+		eval(r + ".className =3D 'regF';");
+	}
+	else if (r =3D=3D "m") {
+		eval(r + ".className =3D 'reg';");
+	}
+	else if (r.charAt(0) =3D=3D 'm') {
+		if (r !=3D "m"+rdm.value)
+			eval(r + ".className =3D 'celdaN';");
+		else
+			eval(r + ".className =3D=3D 'celdaN'?"+ r + ".className =3D =
+'celdaA':null;");
+	}
+	else {
+		eval(r + ".className =3D 'reg';");
+	}
+}
+
+function apagarMem()
+{
+	apagar("m0");
+	apagar("m1");
+	apagar("m2");
+	apagar("m3");
+	apagar("m4");
+	apagar("m5");
+	apagar("m6");
+	apagar("m7");
+	apagar("m8");
+	apagar("m9");
+	apagar("mA");
+	apagar("mB");
+	apagar("mC");
+	apagar("mD");
+	apagar("mE");
+	apagar("mF");
+}
+	=09
+function iluminar(r)
+{
+	if ((r =3D=3D "of") || (r =3D=3D "sf") || (r =3D=3D "zf")) {
+		eval(r + ".className =3D 'regFC';");
+	}
+	else if (r =3D=3D "m") {
+		eval(r + ".className =3D 'regC';");
+	}
+	else if (r.charAt(0) =3D=3D 'm') {
+		eval(r + ".className =3D 'celdaC';");
+	}
+	else {
+		eval(r + ".className =3D 'regC';");
+	}
+}
+
+function alu(o1, o2, signal)
+{
+	var op1, op2, res, of2, sf2, zf2;
+
+	res =3D r0.value;
+	op1 =3D Number(o1);
+	op2 =3D Number(o2);
+		=09
+	if (signal =3D=3D "S") {
+		res =3D op1 + op2;
+	}
+	else if (signal =3D=3D "R") {
+		res =3D op1 - op2;
+	}
+	else if (signal =3D=3D "M") {
+		res =3D op1 * op2;
+	}
+	else if (signal =3D=3D "D") {
+		res =3D Math.floor(op1 / op2);
+	}
+	else if (signal =3D=3D "C") {
+		res =3D op1 - op2;
+	}
+	else {
+		res =3D op1
+	}
+
+	if (res > 127) {
+		of2 =3D 1;
+		res =3D res - 256;
+	}
+	else if (res < -128) {
+		of2 =3D 1;
+		res =3D 256 + res;
+	}
+	else {
+		of2 =3D 0;
+	}
+
+	if (signal =3D=3D "C") {
+		r0.className =3D "reg";
+	}
+	else {
+		r0.value =3D res;
+		r0.className =3D "regC";
+	}
+
+	sf2 =3D (res < 0)?1:0;
+	zf2 =3D (res =3D=3D 0)?1:0;
+		=09
+	if (of.value !=3D of2) of.className =3D "regFC"; else of.className =3D =
+"regF";
+	if (sf.value !=3D sf2) sf.className =3D "regFC"; else sf.className =3D =
+"regF";
+	if (zf.value !=3D zf2) zf.className =3D "regFC"; else zf.className =3D =
+"regF";
+		=09
+	of.value =3D of2;
+	sf.value =3D sf2;
+	zf.value =3D zf2;
+}
+
+// </pre>
+------=_NextPart_000_0000_01CC8DCD.9C7CF9F0--

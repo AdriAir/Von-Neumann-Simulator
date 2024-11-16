@@ -1,0 +1,95 @@
+body {
+    margin: 0px;
+}
+
+#simulator {
+    position: absolute;
+    left: calc(50vw - (700px / 2));
+    height: 500px;
+    width: 700px;
+}
+
+#simulatorImg {
+    height: calc(646px + 20%);
+    width: calc(452px + 20%);
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#returnToMenu {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    width: 50px;
+    height: 25px;
+    background-color: var(--btn-background-color);
+    border: solid black 1px;
+    z-index: 1;
+}
+
+#returnToMenu:hover {
+    background-color: var(--btn-hover-background-color);
+    /* color: white; */
+}
+
+#alu-o1 {
+    position: absolute;
+    left: 200px;
+    top: 22px;
+    width: 97px;
+    height: 20px;
+}
+
+#alu-o2 {
+    position: absolute;
+    left: 350px;
+    top: 22px;
+    width: 97px;
+    height: 20px;
+}
+
+#alu-c1 {
+    position: absolute;
+    left: 500px;
+    top: 156px;
+    width: 100px;
+    height: 30px;
+}
+
+#alu-c2 {
+    position: absolute;
+    left: 500px;
+    top: 195px;
+    width: 100px;
+    height: 30px;
+}
+
+#alu-a {
+    position: absolute;
+    top: 338px;
+    left: 270px;
+    width: 108px;
+    height: 20px;
+}
+#alu-of {
+    position: absolute;
+    top: 338px;
+    left: 89px;
+    width: 30px;
+    height: 20px;
+}
+#alu-sf {
+    position: absolute;
+    top: 338px;
+    left: 128px;
+    width: 30px;
+    height: 20px;
+}
+#alu-zf {
+    position: absolute;
+    top: 338px;
+    left: 167px;
+    width: 30px;
+    height: 20px;
+}

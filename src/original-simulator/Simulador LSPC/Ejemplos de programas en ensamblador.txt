@@ -1,0 +1,84 @@
+Ejemplos de programas en Lenguaje Ensamblador de la MR
+------------------------------------------------------
+
+
+Programa 1. Multiplicación de dos números "a" y "b"
+---------------------------------------------------
+Método: Se suma a consigo mismo tantas veces como indique b
+El resultado se guarda en "sum"
+
+	.BEGIN ini
+a:	.DW 10 		; Variable a
+b:	.DW 5		; Variable b
+sum:	.DW 0		; Resultado
+
+ini:   	load a(R0),R1   ; 10 -> R1 
+       	load b(R0),R2   ; 5 -> R2
+       	addi R0,#0,R3   ; 0 -> R3
+loop: 	subi R2,#0,R0   ; R2 positivo?   
+       	ble fin		; Si <= 0, entonces FIN
+	add R3,R1,R3   	; R3+10 -> R3
+        subi R2,#1,R2   ; R2-1 -> R2
+        br loop		; repetir bucle
+fin:    store R3,sum(R0) ; R3 -> resultado
+	.END
+
+
+
+
+
+Programa 2. Suma de una constante a todos los elmentos de un vector
+-------------------------------------------------------------------
+
+
+	.BEGIN ini	; Suma una Cte a los elementos de un vector de 5 componentes
+v:	.DW 15		;v(1)
+	.DW 17		;v(2)
+	.DW 21		;v(3)
+	.DW 27		;v(4)
+	.DW 29		;v(5)
+cte:	.DW 9		;Cte
+n:	.DW 5		;N. elementos
+ini:	load n(R0),R1  	; n ---> R1 
+	load cte(R0),R2 ; cte ---> R2
+	addi R0,#0,R3	; R3 es el indice
+loop:	subi R1,#0,R0	; Es R1 positivo?
+	ble fin
+	load v(R3), R4	; cargar elemento de v
+	add R4,R2,R4	; sumar cte
+	store R4,v(R3)	; almacenar resultado
+	addi R3,#1,R3	; incrementar indice
+	subi R1,#1,R1	; decrementar contador
+	br loop
+fin:	add R0,R0,R0
+	.END
+
+
+
+Programa 3. Suma de dos vectores "a" y "b" de 10 componentes.
+-------------------------------------------------------------
+El resultado se guarda en las diez componentes del vector "c"
+
+
+	.BEGIN ini
+	; Suma de los vectores a y b (de 10 componentes)
+	; el resultado se almacena en el vector c
+a:      .DW 1,2,3,4,5,6,7,8,9,10
+b:      .DW 11,12,13,14,15,16,17,18,19,20
+c:      .RW 10
+n:      .DW 10
+        .ORG 128
+ini: 	load n(r0),r4	; Carga la dimension de los vectores
+        add r0,r0,r1	; Inicializa el indice: r1 = 0
+loop:   sub r1,r4,r0	; Si indice mayor o igual que dimension, final
+        bge finl
+        load a(r1),r2	; Cargar elemento de a
+        load b(r1),r3	; Cargar elemento de b
+        add r2,r3,r3	; Sumar elmentos
+        store r3,c(r1)	; Almacenar elemento de c
+        addi r1,#1,r1	; Incrementar indice
+        br loop
+finl:	add r0,r0,r0
+	.END
+
+

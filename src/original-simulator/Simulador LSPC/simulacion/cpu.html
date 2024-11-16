@@ -1,0 +1,800 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+	<title>Unidad Central de Procesamiento</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<style type="text/css">
+	<!--
+		.reg {color: black; border: none; height: 18px; font-weight: bold; font-size: 10pt}
+		.regC {color: red; border: none; height: 18px; font-weight: bold; font-size: 10pt}
+		.regF {color: black; border: none; height: 18px; font-weight: bold; font-size: 10pt; width: 10px; height: 18px; font-weight: bold; font-size: 10pt}
+		.regFC {color: red; border: none; height: 18px; font-weight: bold; font-size: 10pt; width: 10px; height: 18px; font-weight: bold; font-size: 10pt}
+		.celdaN {color: black; border-color: white; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.celdaA {color: blue; border-color: green; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.celdaC {color: red; border-color: green; border-style: solid; border-width: thin; width: 104px; height: 18px; font-weight: bold; font-size: 8pt}
+		.cabecera {color: white; font: 18pt; font-family: sans-serif; font-weight: bold}
+		.apartado {color: white; font: 14pt; font-family: sans-serif; font-weight: bold}
+		BODY {font-family: sans-serif; font-size: 10pt}
+		TABLE {font-family: sans-serif; font-size: 10pt}
+	-->
+	</style>
+
+	<script language="JavaScript" src="asm.js"></script>
+	<script language="JavaScript" src="comun_uc_cpu.js"></script>
+	
+	<script language="JavaScript">
+		// Funcionamiento de la máquina
+		var p = 0;
+		var estado = 0;
+		var paso = 0;
+		var inst;
+		
+		function pulso()
+		{
+			
+			p++;
+			ciclo.value = p;
+			
+			apagarTodo();
+			
+			// RDM <- CP
+			if (estado == 0) {
+				rdm.value = cp.value;
+				iluminar("rdm");
+				iluminar("m" + rdm.value);
+				
+				estado++;
+			}
+			// RIM <- M(RDM)
+			else if (estado == 1) {
+				eval("rim.value = m"+ rdm.value +".value;");
+				iluminar("rim");
+				
+				estado++;
+			}
+			// RI <- RIM
+			else if (estado == 2) {
+				ri.value = rim.value;
+				iluminar("ri");
+
+				inst = analizar(ri.value);
+				estado++;
+			}
+			// Fase ejecución
+			else if (estado == 3) {
+				if (inst.type == 1) {
+					if (inst.o == "CAR") {
+						// RDM <- m
+						if (paso == 0) {
+							rdm.value = inst.a.charAt(1);
+							iluminar("rdm");
+							paso++;
+						}
+						// RIM <- M(RDM)
+						else if (paso == 1) {
+							eval("rim.value = m"+ rdm.value +".value;");
+							iluminar("rim");
+							paso++;
+						}
+						// r0 <- RIM
+						else if (paso == 2) {
+							r0.value = rim.value;
+							iluminar("r0");
+							paso = 0;
+							estado ++;
+						}
+					}
+					else if (inst.o == "ALM") {
+						// RDM <- m
+						if (paso == 0) {
+							rdm.value = inst.a.charAt(1);
+							iluminar("rdm");
+							paso++;
+						}
+						// RIM <- r0
+						else if (paso == 1) {
+							rim.value = r0.value;
+							iluminar("rim");
+							paso++;
+						}
+						// M(RDM) <- RIM
+						else if (paso == 2) {
+							eval("m"+ rdm.value +".value = rim.value;");
+							iluminar("m"+ rdm.value);
+							
+							paso = 0;
+							estado++;
+						}
+					}
+					else if (inst.o == "SAL"){
+						cp.value = inst.a.charAt(1);
+						iluminar("cp");
+						estado = 0;
+					}
+					else if (inst.o == "SIG"){
+						if (zf.value == "1") {
+							cp.value = inst.a.charAt(1);
+							iluminar("cp");
+							estado = 0;
+						}
+						else {
+							estado++;
+						}
+					}
+					else if (inst.o == "SMA"){
+						if ((zf.value == "0") && (sf.value == "0")) {
+							cp.value = inst.a.charAt(1);
+							iluminar("cp");
+							estado = 0;
+						}
+						else {
+							estado++;
+						}
+					}
+					else if (inst.o == "SME"){
+						if (of.value != sf.value) {
+							cp.value = inst.a.charAt(1);
+							iluminar("cp");
+							estado = 0;
+						}
+						else {
+							estado++;
+						}
+					}
+				}
+				else if (inst.type == 2) {
+					if (inst.o == "COP") {
+						eval(inst.b +".value = "+ inst.a +".value;");
+						iluminar(inst.b);
+					}
+					else if (inst.o == "CMP") {
+						eval("alu("+ inst.a +".value, "+ inst.b +".value, 'C');");
+					}
+					else {
+						var oper = new Array();
+						oper["SUM"] = "+";
+						oper["RES"] = "-";
+						oper["MUL"] = "*";
+						oper["DIV"] = "/";
+
+						var operS = new Array();
+						operS["SUM"] = "Sumar";
+						operS["RES"] = "Restar";
+						operS["MUL"] = "Multiplicar";
+						operS["DIV"] = "Dividir";
+						
+						eval("alu("+ inst.a +".value, "+ inst.b +".value, '"+ inst.o.charAt(0) +"');");
+					}
+
+					paso = 0;
+					estado ++;
+				}
+				else if (inst.type == 3) {
+					if (inst.o == "NOP") {
+						estado++;
+					}
+				}
+			}
+			// CP <- CP + 1
+			else if (estado == 4) {
+				if (cp.value == "F") {
+					alert(" No se puede continuar, reinicie la máquina");
+				}
+				else {
+					cp.value = mem[find(mem, cp.value) + 1];
+					iluminar("cp");
+				
+					estado = 0;
+				}
+			}
+
+			apagarMem();
+		}
+		
+		function reset()
+		{
+			p = 0;
+			estado = 0;
+			paso = 0;
+
+			r0.value = "";
+			r1.value = "";
+			r2.value = "";
+			r3.value = "";
+			
+			of.value = "";
+			sf.value = "";
+			zf.value = "";
+			
+			rim.value = "";
+			rdm.value = "";
+			
+			ri.value = "";
+			cp.value = 4;
+			iluminar("cp");
+			
+			//programa1();
+			cargar();
+
+			ciclo.value = 0;
+		}
+		
+		function programa1()
+		{
+			p0.value = "2";
+			p1.value = "3";
+			p2.value = "";
+			p3.value = "";
+		
+			p4.value = "CAR m0";
+			p5.value = "COP r0, r1";
+			p6.value = "CAR m1";
+			p7.value = "SUM r0, r1";
+			pF.value = "CAR m0";
+		}
+		
+		function apagarTodo()
+		{
+			apagar("r0");
+			apagar("r1");
+			apagar("r2");
+			apagar("r3");
+			
+			apagar("of");
+			apagar("sf");
+			apagar("zf");
+			
+			apagar("rim");
+			apagar("rdm");
+			
+			apagar("ri");
+			apagar("cp");
+		}
+		
+
+		var autoPulsadorID = null;
+
+		function autoPulsador()
+		{
+			if ((cp.value == "F") && (estado == 4)) {
+				clearInterval(autoPulsadorID);
+				autoPulsadorID = null;
+
+				botonAuto.value = "Activar";
+				hz.disabled = false;
+			}
+
+			pulso();
+		}
+		
+		function auto()
+		{
+			if (hz.value > 64) {
+				if (confirm("¿Estás loco? ¡El overclocking podría dañar la máquina!\n¿Seguro que quieres continuar?"))
+					location.replace("overclocking.html");
+			}
+			else if (autoPulsadorID == null) {
+				pulso();
+				if ((cp.value != "F") || (estado != 4)) {
+					botonAuto.value = "Detener";
+					autoPulsadorID = setInterval('autoPulsador()', 1000 / Number(hz.value));
+
+					hz.disabled = true;
+				}
+			}
+			else {
+				clearInterval(autoPulsadorID);
+				autoPulsadorID = null;
+				botonAuto.value = "Activar";
+
+				hz.disabled = false;
+			}
+		}
+	</script>
+</head>
+
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="reset()">
+
+	<table border="0" bgcolor="green" width="100%">
+		<tr>
+			<td class="cabecera" align="center">Esquema de Funcionamiento de la CPU</td>
+		</tr>
+	</table>
+	<br><br>
+
+	<table border="1" align="center" bgcolor="#D7DCEB" bordercolor="black" cellpadding="2" cellspacing="0">
+		<tr>
+			<td bordercolor="#D7DCEB" bgcolor="navy" colspan="2" align="center">
+				<div style="color: #ffffff; font-weight: bold">Reloj Automático</font>
+			</td>
+		</tr>
+		<tr>
+			<td bordercolor="#D7DCEB">
+				<select name="hz">
+					<option value="1" >  1 Hz </option>
+					<option value="2" >  2 Hz </option>
+					<option value="4" >  4 Hz </option>
+					<option value="8" >  8 Hz </option>
+					<option value="16"> 16 Hz </option>
+					<option value="32"> 32 Hz </option>
+					<option value="64"> 64 Hz </option>
+					<option value="99">4,2 GHz</option>
+				</select>
+			</td>
+			<td bordercolor="#D7DCEB">
+				<input name="botonAuto" type="button" value="Activar" onclick="auto();" style = "width: 80">
+			</td>
+		</tr>
+		<tr>
+			<td bordercolor="#D7DCEB">
+				<b>Ciclo</b>: <input name="ciclo" class="reg" type="text" size="2" readonly style="background-color: #D7DCEB">
+			</td>
+			<td bordercolor="#D7DCEB">
+				<input type="button" value="Reset" onclick="reset()" style = "width: 80">
+			</td>
+		</tr>
+	</table>
+	<br>
+
+	
+	<table cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr>
+		<td colspan="23"><img width="710" height="26" src="images/cpu_1.gif" border="0"></td>
+		<td><img width="1" height="26" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="75" height="22" src="images/cpu_2.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_3.gif" width="116" height="22" valign="top">
+			<input name="m0" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="42" height="22" src="images/cpu_4.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_5.gif" width="116" height="22" valign="top">
+			<input name="m4" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="43" height="22" src="images/cpu_6.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_7.gif" width="116" height="22" valign="top">
+			<input name="m8" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="3"><img width="42" height="22" src="images/cpu_8.gif" border="0"></td>
+		<td colspan="4" background="images/cpu_9.gif" width="116" height="22" valign="top">
+			<input name="mC" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="44" height="22" src="images/cpu_10.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="4" src="images/cpu_11.gif" border="0"></td>
+		<td><img width="1" height="4" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="75" height="22" src="images/cpu_12.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_13.gif" width="116" height="22" valign="top">
+			<input name="m1" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="42" height="22" src="images/cpu_14.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_15.gif" width="116" height="22" valign="top">
+			<input name="m5" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="43" height="22" src="images/cpu_16.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_17.gif" width="116" height="22" valign="top">
+			<input name="m9" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="3"><img width="42" height="22" src="images/cpu_18.gif" border="0"></td>
+		<td colspan="4" background="images/cpu_19.gif" width="116" height="22" valign="top">
+			<input name="mD" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="44" height="22" src="images/cpu_20.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="5" src="images/cpu_21.gif" border="0"></td>
+		<td><img width="1" height="5" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="75" height="22" src="images/cpu_22.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_23.gif" width="116" height="22" valign="top">
+			<input name="m2" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="42" height="22" src="images/cpu_24.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_25.gif" width="116" height="22" valign="top">
+			<input name="m6" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="43" height="22" src="images/cpu_26.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_27.gif" width="116" height="22" valign="top">
+			<input name="mA" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="3"><img width="42" height="22" src="images/cpu_28.gif" border="0"></td>
+		<td colspan="4" background="images/cpu_29.gif" width="116" height="22" valign="top">
+			<input name="mE" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="44" height="22" src="images/cpu_30.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="4" src="images/cpu_31.gif" border="0"></td>
+		<td><img width="1" height="4" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img width="75" height="22" src="images/cpu_32.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_33.gif" width="116" height="22" valign="top">
+			<input name="m3" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="42" height="22" src="images/cpu_34.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_35.gif" width="116" height="22" valign="top">
+			<input name="m7" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="43" height="22" src="images/cpu_36.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_37.gif" width="116" height="22" valign="top">
+			<input name="mB" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="3"><img width="42" height="22" src="images/cpu_38.gif" border="0"></td>
+		<td colspan="4" background="images/cpu_39.gif" width="116" height="22" valign="top">
+			<input name="mF" class="celdaN" type="text" size="13" readonly>
+		</td>
+		<td colspan="2"><img width="44" height="22" src="images/cpu_40.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="50" src="images/cpu_41.gif" border="0"></td>
+		<td><img width="1" height="50" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="5"><img width="202" height="22" src="images/cpu_42.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_43.gif" width="80" height="22" valign="top">
+			<input name="rim" class="reg" type="text" size="8" readonly>
+		</td>
+		<td colspan="6"><img width="167" height="22" src="images/cpu_44.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_45.gif" width="75" height="22" valign="top">
+			<input name="rdm" class="reg" type="text" size="7" readonly>
+		</td>
+		<td colspan="8"><img width="186" height="22" src="images/cpu_46.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="33" src="images/cpu_47.gif" border="0"></td>
+		<td><img width="1" height="33" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="8"><img width="338" height="25" src="images/cpu_48.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_49.gif" width="33" height="25" valign="top">
+			&nbsp;&nbsp;<input name="zf" class="regF" type="text" readonly>
+		</td>
+		<td colspan="13"><img width="339" height="25" src="images/cpu_50.gif" border="0"></td>
+		<td><img width="1" height="25" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="12"><img width="442" height="2" src="images/cpu_51.gif" border="0"></td>
+		<td rowspan="3" colspan="4" background="images/cpu_52.gif" width="90" height="21" valign="top">
+			<input name="ri" class="reg" type="text" size="9" readonly>
+		</td>
+		<td rowspan="3" colspan="2"><img width="45" height="21" src="images/cpu_53.gif" border="0"></td>
+		<td rowspan="3" colspan="2" background="images/cpu_54.gif" width="87" height="21" valign="top">
+			<input name="cp" class="reg" type="text" size="9" readonly>
+		</td>
+		<td rowspan="3" colspan="3"><img width="46" height="21" src="images/cpu_55.gif" border="0"></td>
+		<td><img width="1" height="2" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="8"><img width="338" height="2" src="images/cpu_56.gif" border="0"></td>
+		<td rowspan="4" colspan="2" background="images/cpu_57.gif" width="33" height="25" valign="top">
+			&nbsp;&nbsp;<input name="sf" class="regF" type="text" readonly>
+		</td>
+		<td rowspan="2" colspan="2"><img width="71" height="19" src="images/cpu_58.gif" border="0"></td>
+		<td><img width="1" height="2" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="2"><img width="70" height="22" src="images/cpu_59.gif" border="0"></td>
+		<td rowspan="2" colspan="2" background="images/cpu_60.gif" width="89" height="22" valign="top">
+			<input name="r0" class="reg" type="text" size="9" readonly>
+		</td>
+		<td rowspan="2" colspan="5"><img width="179" height="22" src="images/cpu_61.gif" border="0"></td>
+		<td><img width="1" height="17" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td rowspan="2" colspan="13"><img width="339" height="6" src="images/cpu_62.gif" border="0"></td>
+		<td><img width="1" height="5" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="8"><img width="338" height="1" src="images/cpu_63.gif" border="0"></td>
+		<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="1" src="images/cpu_64.gif" border="0"></td>
+		<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="8"><img width="338" height="3" src="images/cpu_65.gif" border="0"></td>
+		<td rowspan="2" colspan="2" background="images/cpu_66.gif" width="33" height="25" valign="top">
+			&nbsp;&nbsp;<input name="of" class="regF" type="text" readonly>
+		</td>
+		<td rowspan="2" colspan="13"><img width="339" height="25" src="images/cpu_67.gif" border="0"></td>
+		<td><img width="1" height="3" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td><img width="70" height="22" src="images/cpu_68.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_69.gif" width="89" height="22" valign="top">
+			<input name="r1" class="reg" type="text" size="9" readonly>
+		</td>
+		<td colspan="5"><img width="179" height="22" src="images/cpu_70.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="4" src="images/cpu_71.gif" border="0"></td>
+		<td><img width="1" height="4" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td><img width="70" height="22" src="images/cpu_72.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_73.gif" width="89" height="22" valign="top">
+			<input name="r2" class="reg" type="text" size="9" readonly>
+		</td>
+		<td colspan="20"><img width="551" height="22" src="images/cpu_74.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="4" src="images/cpu_75.gif" border="0"></td>
+		<td><img width="1" height="4" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td><img width="70" height="22" src="images/cpu_76.gif" border="0"></td>
+		<td colspan="2" background="images/cpu_77.gif" width="89" height="22" valign="top">
+			<input name="r3" class="reg" type="text" size="9" readonly>
+		</td>
+		<td colspan="20"><img width="551" height="22" src="images/cpu_78.gif" border="0"></td>
+		<td><img width="1" height="22" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="108" src="images/cpu_79.gif" border="0"></td>
+		<td><img width="1" height="108" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="19"><img width="597" height="26" src="images/cpu_80.gif" border="0"></td>
+		<td colspan="3" background="images/cpu_81.gif" width="86" height="26" valign="top">
+			<input type="button" value="Siguiente" onclick="pulso()" style="font-size: 7pt; font-weight: bold; height: 26; width: 86">
+		</td>
+		<td><img width="27" height="26" src="images/cpu_82.gif" border="0"></td>
+		<td><img width="1" height="26" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="23"><img width="710" height="1" src="images/cpu_83.gif" border="0"></td>
+		<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	</tr>
+	<tr>
+	<td><img width="70" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="5" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="84" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="32" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="11" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="31" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="49" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="56" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="11" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="22" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="21" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="50" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="7" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="59" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="16" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="8" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="18" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="27" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="20" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="67" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="2" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="17" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="27" height="1" src="images/space.gif" border="0"></td>
+	<td><img width="1" height="1" src="images/space.gif" border="0"></td>
+	</tr>
+	</table>
+
+	
+
+	<!-- Cargador de Programas -->
+	<table border="0" cellspacing="20" width="100%"><tr><td bgcolor="#F0EBFF">
+		<table border="0" bgcolor="purple" width="100%">
+			<tr>
+				<td class="apartado" align="center">Cargador de Programas</td>
+			</tr>
+		</table>
+	
+		<table border="0" cellspacing="20" width="100%"><tr><td>
+			Aquí puedes escribir un programa en lenguaje ensamblador para porbar la máquina.<br>
+			Las 4 primeras palabras de la memoria (m0 a m3) se han reservado para los datos,
+			por lo tanto, las instrucciones se almacenarán a partir de la dirección m4 y el
+			contador de programa apuntará inicialmente a m4.
+			<br><br>
+
+			<table border="0" cellpadding="0" cellspacing="0" bgcolor="black">
+				<tr>
+					<td align="center">
+						<table width="100%" border="0" bgcolor="navy" cellpadding="5" cellspacing="0">
+							<tr><td style="font-size: 12pt; font-weight: bold; color: white" align="center">Datos</td></tr>
+						</table>
+					</td>
+					<td align="center">
+						<table width="100%" border="0" bgcolor="navy" cellpadding="5" cellspacing="0">
+							<tr><td style="font-size: 12pt; font-weight: bold; color: white" align="center">Valor que se almacenará</td></tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table border="0" bgcolor="#C4C4D5" cellpadding="0" cellspacing="0">
+							<tr><td>m0:</td><td><input name="p0" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m1:</td><td><input name="p1" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m2:</td><td><input name="p2" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m3:</td><td><input name="p3" class="reg" type="text" size="20"></td></tr>
+						</table>
+					</td>
+					<td>
+						<table border="0" bgcolor="#C4C4D5" cellpadding="0" cellspacing="0">
+							<tr><td>&nbsp;</td><td><input name="v0" class="reg" type="text" size="30" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="v1" class="reg" type="text" size="30" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="v2" class="reg" type="text" size="30" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="v3" class="reg" type="text" size="30" readonly></td></tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+
+			<br>
+			<table border="0" cellpadding="0" cellspacing="0" bgcolor="black">
+				<tr>
+					<td align="center">
+						<table width="100%" border="0" bgcolor="green" cellpadding="5" cellspacing="0">
+							<tr><td style="font-size: 12pt; font-weight: bold; color: white" align="center">Instrucciones</td></tr>
+						</table>
+					</td>
+					<td>
+						<table width="100%" border="0" bgcolor="green" cellpadding="5" cellspacing="0">
+							<tr><td style="font-size: 12pt; font-weight: bold; color: white" align="center">Comprobación</td></tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table border="0" bgcolor="#C4D5C4" cellpadding="0" cellspacing="0">
+							<tr><td>m4:</td><td><input name="p4" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m5:</td><td><input name="p5" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m6:</td><td><input name="p6" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m7:</td><td><input name="p7" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m8:</td><td><input name="p8" class="reg" type="text" size="20"></td></tr>
+							<tr><td>m9:</td><td><input name="p9" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mA:</td><td><input name="pA" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mB:</td><td><input name="pB" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mC:</td><td><input name="pC" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mD:</td><td><input name="pD" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mE:</td><td><input name="pE" class="reg" type="text" size="20"></td></tr>
+							<tr><td>mF:</td><td><input name="pF" class="reg" type="text" size="20"></td></tr>
+						</table>
+					</td>
+					<td>
+						<table border="0" bgcolor="#C4D5C4" cellpadding="0" cellspacing="0">
+							<tr><td>&nbsp;</td><td><input name="e4" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="e5" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="e6" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="e7" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="e8" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="e9" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eA" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eB" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eC" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eD" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eE" class="reg" type="text" size="50" readonly></td></tr>
+							<tr><td>&nbsp;</td><td><input name="eF" class="reg" type="text" size="50" readonly></td></tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			
+			<br><br>
+			<input type="button" value="Cargar Programa" onclick="cargar()">
+
+
+		</td></tr></table>
+	</td></tr></table>
+
+	
+	<!-- Descripción -->
+	<table border="0" cellspacing="20" width="100%"><tr><td bgcolor="#EFF3FF">
+		<table border="0" bgcolor="navy" width="100%">
+			<tr>
+				<td class="apartado" align="center">Descripción del Computador</td>
+			</tr>
+		</table>
+	
+		<table border="0" cellspacing="20" width="100%"><tr><td>
+			Este computador de ejemplo tiene las siguientes características:
+			<br><br>
+			- La memoria tiene un tamaño de 16 palabras de 8 bits cada una.<br>
+			- Dispone de cuatro registros de propósito general, llamados r0, r1, r2 y r3.<br>
+			- Un registro de intercambio con memoria (RIM) de 8 bits.<br>
+			- Un registro de dirección de memoria (RDM) de 4 bits.<br>
+			- Un registro contador de programa (CP) de 4 bits.<br>
+			- Un registro de instrucción (RI) de 8 bits.<br>
+			- Una ALU que opera con números (con signo) de 8 bits, usando representación en Complemento
+			  a 2.<br>
+			- Una palabra de estado con tres indicadores (OF, SF y ZF).<br>
+
+			<br>
+			El repertorio de instrucciones es el siguiente:<br>
+			<br>
+			<table border="1" cellspacing="0" bordercolor="silver" cellpadding="5" align="center">
+				<tr>
+					<td><b>Instrucción</b></td>
+					<td><b>Descripción</b></td>
+					<td><b>Efectos</b></td>
+				</tr>
+				<tr>
+					<td>CAR mem</td>
+					<td>Cargar desde memoria</td>
+					<td>r0 &lt;- M(mem)</td>
+				</tr>
+				<tr>
+					<td>ALM mem</td>
+					<td>Almacenar en memoria</td>
+					<td>M(mem) &lt;- r0</td>
+				</tr>
+				<tr>
+					<td>SAL mem</td>
+					<td>Salto incondicional</td>
+					<td>CP &lt;- mem</td>
+				</tr>
+				<tr>
+					<td>SIG mem</td>
+					<td>Salto si igual<br>Se utiliza después de CMP</td>
+					<td>Si ZF = 0 entonces CP &lt;- mem</td>
+				</tr>
+				<tr>
+					<td>SMA mem</td>
+					<td>Salto si mayor<br>Se utiliza después de CMP</td>
+					<td>Si ZF = 0 y SF = 0 entonces CP &lt;- mem</td>
+				</tr>
+				<tr>
+					<td>SME mem</td>
+					<td>Salto si menor<br>Se utiliza después de CMP</td>
+					<td>Si OF != SF entonces CP &lt;- mem</td>
+				</tr>
+				<tr>
+					<td>COP Ra, Rb</td>
+					<td>Copiar Ra, Rb</td>
+					<td>Rb &lt;- Ra<br>Flags &lt;- f(Rb)</td>
+				</tr>
+				<tr>
+					<td>SUM Ra, Rb</td>
+					<td>Sumar Ra y Rb</td>
+					<td>r0 &lt;- Ra + Rb<br>Flags &lt;- f(r0)</td>
+				</tr>
+				<tr>
+					<td>RES Ra, Rb</td>
+					<td>Restar Ra y Rb</td>
+					<td>r0 &lt;- Ra - Rb<br>Flags &lt;- f(r0)</td>
+				</tr>
+				<tr>
+					<td>MUL Ra, Rb</td>
+					<td>Multiplicar Ra y Rb</td>
+					<td>r0 &lt;- Ra * Rb<br>Flags &lt;- f(r0)</td>
+				</tr>
+				<tr>
+					<td>DIV Ra, Rb</td>
+					<td>Dividir Ra y Rb</td>
+					<td>r0 &lt;- Ra / Rb<br>Flags &lt;- f(r0)</td>
+				</tr>
+				<tr>
+					<td>CMP Ra, Rb</td>
+					<td>Comparar Ra y Rb</td>
+					<td>Flags &lt;- f(Ra - Rb)</td>
+				</tr>
+				<tr>
+					<td>NOP</td>
+					<td>No operar</td>
+					<td>Ninguno</td>
+				</tr>
+			</table>
+			
+		</td></tr></table>
+	</td></tr></table>
+
+	
+</body>
+</html>
