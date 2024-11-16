@@ -1,0 +1,31 @@
+// Colores base
+$primary-color: #3498db; // Azul brillante
+$secondary-color: #2ecc71; // Verde vibrante
+$accent-color: #e74c3c; // Rojo de acento
+
+// Colores neutros
+$background-color: #f4f6f8; // Gris claro (fondo)
+$text-color: #333333; // Gris oscuro para el texto
+$subtle-text-color: #7f8c8d; // Gris suave para textos secundarios
+$border-color: #ddd; // Color de bordes
+
+// Colores de estado
+$success-color: #28a745; // Verde éxito
+$error-color: #dc3545; // Rojo error
+$warning-color: #f39c12; // Naranja advertencia
+$info-color: #17a2b8; // Azul información
+
+// Colores para elementos de interfaz
+$button-color: $primary-color; // Botones con color principal
+$button-hover-color: darken($primary-color, 10%); // Botón al pasar el cursor (más oscuro)
+$input-border-color: $border-color; // Color del borde de los inputs
+$input-focus-color: $primary-color; // Color cuando el input tiene foco
+
+// Colores de gradientes
+$gradient-primary: linear-gradient(135deg, #3498db, #2ecc71); // De azul a verde
+$gradient-secondary: linear-gradient(135deg, #e74c3c, #f39c12); // De rojo a naranja
+
+// Colores de sombras
+$shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1); // Sombra sutil
+$shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.2); // Sombra moderada
+$shadow-heavy: 0 10px 20px rgba(0, 0, 0, 0.3); // Sombra más fuerte
