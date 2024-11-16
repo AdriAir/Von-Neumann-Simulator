@@ -1,9 +1,9 @@
 function ArithmeticLogicUnit() {
 
     return (
-        <>
+        <div>
             Arithmetic Logic Unit
-        </>
+        </div>
     )
 }
 
