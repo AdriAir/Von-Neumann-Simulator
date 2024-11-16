@@ -1,10 +1,10 @@
-import {Outlet, useNavigate} from "react-router-dom";
-import {BaseButton} from "../components";
-import {APP_ROUTES} from "../utils";
+import {useNavigate} from "react-router-dom";
+import {APP_ROUTES} from "../../../utils";
+import {BaseButton} from "../../../components";
 
 type ButtonsMappingType = { text: string, onClick: Function }[]
 
-export default function AppLayout() {
+export default function WindowTravelling() {
 
     const navigate = useNavigate()
     const buttonsMapping: ButtonsMappingType = [
@@ -27,12 +27,8 @@ export default function AppLayout() {
     ]
 
     return <div>
-        Layout
-        <section>
-            {buttonsMapping.map((props, idx) => (
-                <BaseButton key={idx} props={props}/>
-            ))}
-        </section>
-        <Outlet/>
+        {buttonsMapping.map((props, idx) => (
+            <BaseButton key={idx} props={props}/>
+        ))}
     </div>
 }

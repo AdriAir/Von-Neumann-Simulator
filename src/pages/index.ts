@@ -1,4 +1,4 @@
-export {default as AppLayout} from "./layout.tsx"
+export {AppLayout} from "./layout"
 export {Cpu} from "./cpu"
 export {Memory} from "./mp"
 export {ControlUnit} from "./uc"
