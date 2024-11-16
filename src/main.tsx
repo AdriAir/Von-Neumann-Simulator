@@ -3,9 +3,10 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Cpu} from "./pages/cpu";
 import {AppLayout, ArithmeticLogicUnit, ControlUnit, Memory} from "./pages";
 import {APP_ROUTES} from "./utils";
+import "./styles.scss";
 
 createRoot(document.getElementById('root')!).render(
-    <BrowserRouter>
+    <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
         <Routes>
             <Route path="/" element={<AppLayout/>}>
                 <Route index element={<Cpu/>}/>

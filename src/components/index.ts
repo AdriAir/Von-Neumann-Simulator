@@ -1,1 +1,1 @@
-export {BaseButton} from "./buttons"
+export {BaseButton} from "./tabs"

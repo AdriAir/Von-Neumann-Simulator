@@ -1,6 +1,6 @@
 import {ArithmeticLogicUnit} from "./alu";
 import {Memory} from "./mp";
-import {ControlUnit} from "./uc";
+import {ControlUnit} from "./cu";
 
 function Cpu() {
 

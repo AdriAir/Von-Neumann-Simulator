@@ -3,15 +3,15 @@ type ButtonPropsType = {
     text: string
 }
 
-function BaseButton({props}: { props: ButtonPropsType }) {
+function BaseTab({props}: { props: ButtonPropsType }) {
 
     const {text, onClick} = props
 
     return (
         <button onClick={() => onClick()}>
-                {text}
+            {text}
         </button>
     )
 }
 
-export default BaseButton
+export default BaseTab
