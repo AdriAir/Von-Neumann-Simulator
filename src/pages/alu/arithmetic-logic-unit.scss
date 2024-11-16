@@ -1,11 +1,83 @@
-.alu-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
+@use "/src/styles/variables" as *;
 
-  .alu-icon {
-    justify-content: center;
-    align-items: center;
-    width: 15%;
+.alu {
+
+  background-image: url("src/assets/icons/alu.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 300px;
+  height: 100%;
+
+  //.alu-wrapper {
+  //  width: 100%;
+  //  height: 100%;
+  //  display: flex;
+  //  justify-content: center;
+  //
+  //  .alu-icon {
+  //    justify-content: center;
+  //    align-items: center;
+  //    width: 20%;
+  //  }
+  //}
+
+  .inputs-wrapper {
+
+  }
+
+  .output-wrapper {
+
+  }
+
+  .flags-wrapper {
+    display: flex;
+    width: max-content;
+    border: 1px solid $primary-color;
+    border-radius: 3px;
+
+    .flags-grid {
+      display: grid;
+
+      div {
+        border: 1px solid $button-hover-color;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+      }
+
+      grid-template-areas:
+                "of-head sf-head zf-head"
+                "of-value sf-value zf-value";
+
+      .overflow-flag-header {
+        grid-area: of-head;
+      }
+
+      .overflow-flag-value {
+        grid-area: of-value;
+      }
+
+      .sign-flag-header {
+        grid-area: sf-head;
+      }
+
+      .sign-flag-value {
+        grid-area: sf-value;
+      }
+
+      .zero-flag-header {
+        grid-area: zf-head;
+      }
+
+      .zero-flag-value {
+        grid-area: zf-value;
+      }
+    }
+  }
+
+  .cu {
+    .cu-wrapper {
+
+    }
   }
 }

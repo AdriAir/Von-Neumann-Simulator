@@ -1,17 +1,25 @@
 import "./single-tab.scss"
+import {useEffect, useState} from "react";
 
-type ButtonPropsType = {
+type TabsPropsType = {
     onClick: Function,
-    text: string
+    text: string,
+    url: string,
 }
 
-function SingleTab({props}: { props: ButtonPropsType }) {
+function SingleTab({props}: { props: TabsPropsType }) {
 
-    const {text, onClick} = props
+    const {text, onClick, url} = props
+    const [active, setActive] = useState<boolean>(false)
+
+    useEffect(() => {
+        setActive(location.pathname.includes(url))
+    }, [location.pathname])
+
 
     return (
-        <div className="single-table" onClick={() => onClick()}>
-            <h4>{text}</h4>
+        <div className={active ? "single-table active" : "single-table"} onClick={() => onClick()}>
+            <h3>{text}</h3>
         </div>
     )
 }

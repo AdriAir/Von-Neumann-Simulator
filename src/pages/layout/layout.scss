@@ -1,0 +1,24 @@
+@use "/src/styles/variables" as *;
+
+.layout-wrapper {
+  height: 100vh;
+  width: 100vw;
+
+  .header {
+
+    height: 10vh;
+
+    .layout {
+      width: 100%;
+      background-color: $primary-color;
+      padding: 10px;
+      color: $background-color;
+    }
+  }
+
+  .body {
+    height: 88vh;
+    margin: 5px 10px;
+  }
+}
+
