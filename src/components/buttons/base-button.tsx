@@ -1,7 +1,7 @@
-function BaseButton({text}: { text: string }) {
+function BaseButton({text, children, ...props}: { text: string }) {
 
     return (
-        <button>
+        <button {...props}>
             {text}
         </button>
     )
