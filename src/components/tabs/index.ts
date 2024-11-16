@@ -1,1 +1,0 @@
-export {default as BaseTab} from "./base-tab.tsx"

@@ -3,7 +3,7 @@ type ButtonPropsType = {
     text: string
 }
 
-function BaseTab({props}: { props: ButtonPropsType }) {
+function SingleTab({props}: { props: ButtonPropsType }) {
 
     const {text, onClick} = props
 
@@ -14,4 +14,4 @@ function BaseTab({props}: { props: ButtonPropsType }) {
     )
 }
 
-export default BaseTab
+export default SingleTab
