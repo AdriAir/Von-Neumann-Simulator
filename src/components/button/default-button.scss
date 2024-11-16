@@ -1,0 +1,30 @@
+@use "/src/styles/variables" as *;
+
+.button-wrapper {
+  display: flex;
+  width: max-content;
+
+  .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: min-content;
+    margin: 10px 5px;
+    padding: 10px;
+    text-transform: capitalize;
+    color: white;
+    border-radius: 3px;
+    background-color: $primary-color;
+
+  }
+
+  .button:hover {
+    background-color: $button-hover-color;
+  }
+
+  .button:active {
+    background-color: $secondary-color;
+    color: black;
+  }
+}

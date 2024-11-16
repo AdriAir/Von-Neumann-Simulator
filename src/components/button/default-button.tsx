@@ -4,7 +4,9 @@ function DefaultButton({text}: { text: string }) {
     return (
         <>
             <section className="button-wrapper">
-                {text}
+                <div className="button">
+                    {text}
+                </div>
             </section>
         </>
     )

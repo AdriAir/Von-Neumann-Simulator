@@ -1,9 +1,11 @@
+import "./arithmetic-logic-unit.scss"
+
 function ArithmeticLogicUnit() {
 
     return (
-        <div>
-            Arithmetic Logic Unit
-        </div>
+        <>
+            Arithmetic-Logic Unit
+        </>
     )
 }
 
