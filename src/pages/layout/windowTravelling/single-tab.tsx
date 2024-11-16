@@ -1,3 +1,5 @@
+import "./single-tab.scss"
+
 type ButtonPropsType = {
     onClick: Function,
     text: string
@@ -8,9 +10,9 @@ function SingleTab({props}: { props: ButtonPropsType }) {
     const {text, onClick} = props
 
     return (
-        <button onClick={() => onClick()}>
-            {text}
-        </button>
+        <div className="single-table" onClick={() => onClick()}>
+            <h4>{text}</h4>
+        </div>
     )
 }
 

@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {APP_ROUTES} from "../../../utils";
-import SingleTab from "./singleTab.tsx";
+import SingleTab from "./single-tab.tsx";
+import "./window-travelling.scss"
 
 type ButtonsMappingType = { text: string, onClick: Function }[]
 
@@ -26,7 +27,7 @@ function WindowTravelling() {
         }
     ]
 
-    return <div>
+    return <div className="window-travelling">
         {buttonsMapping.map((props, idx) => (
             <SingleTab key={idx} props={props}/>
         ))}

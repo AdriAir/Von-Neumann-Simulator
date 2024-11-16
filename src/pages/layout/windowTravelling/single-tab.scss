@@ -1,0 +1,10 @@
+@use "/src/styles/_variables" as *;
+
+.single-table {
+  border-bottom: 2px $primary-color solid;
+  background-color: $background-color;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+}

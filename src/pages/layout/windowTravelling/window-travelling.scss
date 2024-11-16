@@ -1,0 +1,17 @@
+@use "/src/styles/_variables" as *;
+
+
+.window-travelling {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.layout {
+  width: 100%;
+  background-color: $primary-color;
+  padding: 10px;
+  color: $text-color;
+}

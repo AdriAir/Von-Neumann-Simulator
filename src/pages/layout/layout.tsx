@@ -5,7 +5,9 @@ function AppLayout() {
 
 
     return <div>
-        <h3>Von Neumann Simulator</h3>
+        <div className="layout">
+            <h3 style={{margin: 0}}>Von Neumann Simulator</h3>
+        </div>
         <WindowTravelling/>
         <Outlet/>
     </div>
