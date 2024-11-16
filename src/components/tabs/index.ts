@@ -1,1 +1,1 @@
-export {default as BaseButton} from "./base-tab.tsx"
+export {default as BaseTab} from "./base-tab.tsx"
