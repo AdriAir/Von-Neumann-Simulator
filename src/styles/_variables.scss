@@ -17,7 +17,7 @@ $info-color: #17a2b8; // Azul información
 
 // Colores para elementos de interfaz
 $button-color: $primary-color; // Botones con color principal
-$button-hover-color: darken($primary-color, 10%); // Botón al pasar el cursor (más oscuro)
+$button-hover-color: opacity($primary-color, 90%); // Botón al pasar el cursor (más claro)
 $input-border-color: $border-color; // Color del borde de los inputs
 $input-focus-color: $primary-color; // Color cuando el input tiene foco
 
