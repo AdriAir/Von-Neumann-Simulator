@@ -1,8 +1,15 @@
-function BaseButton({text, children, ...props}: { text: string }) {
+type ButtonPropsType = {
+    onClick: Function,
+    text: string
+}
+
+function BaseButton({props}: { props: ButtonPropsType }) {
+
+    const {text, onClick} = props
 
     return (
-        <button {...props}>
-            {text}
+        <button onClick={() => onClick()}>
+                {text}
         </button>
     )
 }
