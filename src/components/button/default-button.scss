@@ -13,18 +13,16 @@
     margin: 10px 5px;
     padding: 10px;
     text-transform: capitalize;
-    color: white;
     border-radius: 3px;
-    background-color: $primary-color;
+    background-color: transparent;
 
   }
 
   .button:hover {
-    background-color: $button-hover-color;
+    background-color: $primary-color;
   }
 
   .button:active {
     background-color: $secondary-color;
-    color: black;
   }
 }

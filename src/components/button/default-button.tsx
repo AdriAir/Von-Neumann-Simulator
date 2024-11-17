@@ -1,9 +1,9 @@
 import "./default-button.scss";
 
-function DefaultButton({text}: { text: string }) {
+function DefaultButton({text, className}: { text: string, className?: string }) {
     return (
         <>
-            <section className="button-wrapper">
+            <section className={`button-wrapper ${className}`}>
                 <div className="button">
                     {text}
                 </div>
