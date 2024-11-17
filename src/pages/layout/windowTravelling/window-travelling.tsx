@@ -10,17 +10,17 @@ function WindowTravelling() {
     const navigate = useNavigate()
     const buttonsMapping: ButtonsMappingType = [
         {
-            text: "Home",
+            text: "Central Processing Unit",
             onClick: () => navigate(APP_ROUTES.CPU),
             url: APP_ROUTES.CPU
         },
         {
-            text: "UC",
+            text: "Control Unit",
             onClick: () => navigate(APP_ROUTES.UC),
             url: APP_ROUTES.UC
         },
         {
-            text: "ALU",
+            text: "Arithmetic Logic Unit",
             onClick: () => navigate(APP_ROUTES.ALU),
             url: APP_ROUTES.ALU
         },
