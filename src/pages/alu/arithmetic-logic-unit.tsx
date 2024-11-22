@@ -13,7 +13,8 @@ function ArithmeticLogicUnit() {
         makeOperation,
         overFlowFlag,
         signFlag,
-        zeroFlag
+        zeroFlag,
+        errorFlag,
     } = useAluLogic();
 
     const handleExecute = () => {
@@ -51,9 +52,9 @@ function ArithmeticLogicUnit() {
                                     setOperation(Number(e.target.value) as operations)
                                 }
                             >
-                                <option value={operations.SUM}>Suma</option>
-                                <option value={operations.MINUS}>Resta</option>
-                                <option value={operations.MULTI}>Multiplicación</option>
+                                <option value={operations.ADD}>Suma</option>
+                                <option value={operations.SUBTRACT}>Resta</option>
+                                <option value={operations.MULTIPLY}>Multiplicación</option>
                                 <option value={operations.DIVIDE}>División</option>
                                 <option value={operations.COMPARE}>Comparar</option>
                                 <option value={operations.TRANSFER}>Transferir</option>
@@ -70,6 +71,7 @@ function ArithmeticLogicUnit() {
                     <p>Overflow Flag: {overFlowFlag}</p>
                     <p>Sign Flag: {signFlag}</p>
                     <p>Zero Flag: {zeroFlag}</p>
+                    <p>Error Flag: {errorFlag}</p>
                 </article>
             </section>
         </>

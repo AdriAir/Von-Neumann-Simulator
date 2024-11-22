@@ -10,64 +10,91 @@ export function useAluLogic() {
     const [overFlowFlag, setOverFlowFlag] = useState<number>(0)
     const [signFlag, setSignFlag] = useState<number>(0)
     const [zeroFlag, setZeroFlag] = useState<number>(0)
+    const [errorFlag, setErrorFlag] = useState<number>(0)
 
-    const checkZeroFlag = () => {
-        setZeroFlag(operandA === 0 || operandB === 0 ? 1 : 0)
+    const MAX_VALUE = 127
+    const MIN_VALUE = -128
+    const VALUE_RANGE = 256
+    const POSITIVE_VALUES = 128
+
+    function circularOverflow(result: number): number {
+        return ((result + POSITIVE_VALUES) % VALUE_RANGE) - POSITIVE_VALUES;
     }
 
-    const checkSign = (value: number) => {
-        const flagValue = value >= 0 ? 0 : 1
-        setSignFlag(flagValue)
-    }
+    function checkFlags(baseResult: number): void {
 
-    const checkOverflow = (value: number) => {
-        const difference = value < 0 ? value + 128 : value - 127
-        checkSign(value)
-        checkZeroFlag()
-        if (value > 127 || value < -128) {
-            setResult(difference)
-            setOverFlowFlag(1)
-        } else {
-            setResult(value)
-            setOverFlowFlag(0)
+        checkErrorFlag(baseResult)
+
+        if (!errorFlag) {
+            checkSignFLag(circularOverflow(baseResult))
+            checkZeroFlag(circularOverflow(baseResult))
+            checkOverflowFlag(baseResult)
         }
+
+
     }
 
-    const makeOperation = () => {
+    function checkZeroFlag(result: number): void {
+        setZeroFlag(+(result == 0))
+    }
+
+    function checkSignFLag(result: number): void {
+        setSignFlag(+(result < 0))
+    }
+
+    function checkOverflowFlag(result: number) {
+        setOverFlowFlag(+(result < MIN_VALUE || result > MAX_VALUE))
+    }
+
+    function checkErrorFlag(result: number) {
+        setErrorFlag(+(isNaN(result) || result === Infinity || result === -Infinity));
+    }
+
+    function makeOperation(): void {
+
+        let result: number;
 
         switch (operation) {
-            case operations.SUM:
-                checkOverflow(operandA + operandB)
+            case operations.ADD:
+                result = operandA + operandB
                 break
-            case operations.MINUS:
-                checkOverflow(operandA - operandB)
+            case operations.SUBTRACT:
+                result = operandA - operandB
                 break
             case operations.DIVIDE:
-                checkOverflow(operandA / operandB)
+                result = operandA / operandB
                 break
-            case operations.MULTI:
-                checkOverflow(operandA * operandB)
+            case operations.MULTIPLY:
+                result = operandA * operandB
                 break
             case operations.COMPARE:
-                const comparison = operandA === operandB ? 1 : 0
-                setZeroFlag(operandA === 0 || operandB === 0 ? 1 : 0)
-                setResult(comparison)
+                result = +(operandA == operandB)
                 break
             case operations.TRANSFER:
-                setResult(operandA)
+                result = operandA;
                 break
+            default:
+                result = NaN
         }
 
+        checkFlags(result)
+
+        if (!errorFlag) {
+            setResult(circularOverflow(result))
+        } else {
+            setResult(0)
+        }
     }
 
     return {
         operandA,
         operandB,
         operation,
-        result: Math.abs(result),
+        result,
         overFlowFlag,
         signFlag,
         zeroFlag,
+        errorFlag,
         makeOperation,
         setOperandA,
         setOperandB,
